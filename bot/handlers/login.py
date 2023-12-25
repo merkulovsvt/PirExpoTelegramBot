@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 
 from bot.keyboards.inline import inline_start
 from bot.keyboards.reply import reply_main
-from bot.settings import User
+from bot.data import User
 
 router = Router()
 
@@ -28,7 +28,7 @@ async def callback_user_login(callback: types.CallbackQuery):
 async def user_login(message: types.Message, state: FSMContext):
     entities = message.entities or []
     if len(entities) == 1 and entities[0].type == 'phone_number':
-        await state.update_data(phone_number=entities[0])
+        await state.update_data(phone=entities[0].extract_from(message.text))
         await state.set_state(User.logged_in)
         await message.answer(
             "Вы успешно зарегистрировались!",
