@@ -7,5 +7,6 @@ class OrderInfo(CallbackData, prefix="order"):
 
 class TicketInfo(CallbackData, prefix="ticket"):
     order_id: int
-    ticket_id: int
     from_order: bool
+    ticket_id: int
+    ticket_type: str

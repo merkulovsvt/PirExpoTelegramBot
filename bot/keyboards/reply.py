@@ -1,10 +1,11 @@
-from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
+from aiogram.types import KeyboardButton
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 
-def reply_main():
+# Основная reply клавиатура ?
+def reply_main(phone: str):
     buttons = ("Заказы", "Билеты", "Расписание", "Мероприятия", "Экспоненты")
-    text = "Вы успешно зарегистрировались!"
+    text = f"Вы успешно зарегистрировались по номеру {phone}!"
     builder = ReplyKeyboardBuilder()
     for elem in buttons:
         builder.add(KeyboardButton(text=elem))
