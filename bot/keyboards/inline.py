@@ -41,17 +41,21 @@ def inline_orders(orders: dict) -> (str, InlineKeyboardMarkup):
 
 
 # Клавиатура для вывода данных заказа
-def inline_order_data(order_id: int) -> (str, InlineKeyboardMarkup):
+def inline_order_data(order_id: int, is_invoice: bool) -> (str, InlineKeyboardMarkup):
     builder = InlineKeyboardBuilder()
     text = f"Заказ №{order_id}"
 
     builder.button(text="Билеты", callback_data=f"ticket_types_{order_id}")
-    builder.button(text="Счет-договор", callback_data=f"invoice_{order_id}")
 
-    # TODO
-    builder.button(text="УПД", callback_data="1235")
-    builder.button(text="Вернутся к заказам", callback_data="orders")
-    builder.adjust(1, 2, 1)
+    if is_invoice:
+        builder.button(text="Счет-договор", callback_data=f"invoice_{order_id}")
+        # TODO
+        builder.button(text="УПД", callback_data="1235")
+        builder.button(text="Вернутся к заказам", callback_data="orders")
+        builder.adjust(1, 2, 1)
+    else:
+        builder.button(text="Вернутся к заказам", callback_data="orders")
+        builder.adjust(1, repeat=True)
 
     return text, builder.as_markup()
 
@@ -110,7 +114,8 @@ def inline_ticket_data(order_id: int, from_order: bool, ticket_id: int, ticket_t
     builder = InlineKeyboardBuilder()
 
     builder.button(text="Скачать", callback_data=f"print_ticket_{ticket_id}")
-
+    # TODO
+    builder.button(text="?Вернуть?", callback_data="111")
     if ticket_type == "entry":
         text = f"Входной билет №{ticket_id}"
         # TODO
@@ -119,10 +124,7 @@ def inline_ticket_data(order_id: int, from_order: bool, ticket_id: int, ticket_t
     elif ticket_type == "event":
         text = f"Билет на мероприятие №{ticket_id}"
         # TODO
-        builder.button(text="Информация", callback_data="121231312335")
-
-    # TODO
-    builder.button(text="???Вернуть???", callback_data="111")
+        builder.button(text="Информация о мероприятии", callback_data="121231312335")
 
     if from_order:
         addon = order_id
@@ -131,6 +133,6 @@ def inline_ticket_data(order_id: int, from_order: bool, ticket_id: int, ticket_t
 
     builder.button(text="Вернуться к списку билетов", callback_data=f"tickets_{ticket_type}_{addon}")
 
-    builder.adjust(3, 1)
+    builder.adjust(2, 1, 1)
 
     return text, builder.as_markup()

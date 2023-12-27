@@ -14,7 +14,7 @@ async def main():
     # Диспетчер
     dp = Dispatcher()
     dp.include_routers(logout.router, login.router, orders.router, tickets.router)
-    # await bot.delete_webhook(drop_pending_updates=True)
+    await bot.delete_webhook(drop_pending_updates=True)
     # Запуск процесса поллинга новых апдейтов
     await dp.start_polling(bot)
 

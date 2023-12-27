@@ -8,7 +8,8 @@ from aiogram.fsm.context import FSMContext
 from bot.keyboards.inline import (inline_ticket_data, inline_ticket_types,
                                   inline_tickets_list)
 from bot.utils.callbackdata import TicketInfo
-from bot.utils.funcs import User, get_orders, get_ticket_list
+from bot.utils.funcs import get_orders, get_ticket_list
+from bot.utils.states import User
 
 router = Router()
 
@@ -18,8 +19,8 @@ router = Router()
 async def ticket_reply_type_view(message: types.Message, state: FSMContext):
     user_data = await state.get_data()
     orders = user_data.get("orders")
+    await message.bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.TYPING)
     if not orders:
-        await message.bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.TYPING)
         orders = get_orders(phone=user_data["phone"])
         await state.update_data(orders=orders)
 
@@ -98,7 +99,8 @@ async def callback_ticket_print_view(callback: types.CallbackQuery):
 
                 await callback.bot.send_document(callback.message.chat.id,
                                                  document=types.BufferedInputFile(file=result,
-                                                                                  filename=f'Билет #{ticket_id}.pdf'))
+                                                                                  filename=f'Билет #{ticket_id}.pdf'),
+                                                 caption=f"Входной билет #{ticket_id}")
             else:
                 await callback.message.answer(text=f"К сожалению, не можем прислать билет №{ticket_id}")
 

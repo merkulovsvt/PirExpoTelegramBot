@@ -4,7 +4,8 @@ from aiogram.fsm.context import FSMContext
 
 from bot.keyboards.inline import inline_order_data, inline_orders
 from bot.utils.callbackdata import OrderInfo
-from bot.utils.funcs import User, get_orders
+from bot.utils.funcs import get_orders
+from bot.utils.states import User
 
 router = Router()
 
@@ -14,8 +15,8 @@ router = Router()
 async def orders_list_view(message: types.Message, state: FSMContext):
     user_data = await state.get_data()
     orders = user_data.get("orders")
+    await message.bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.TYPING)
     if not orders:
-        await message.bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.TYPING)
         orders = get_orders(phone=user_data['phone'])
         await state.update_data(orders=orders)
 
@@ -23,7 +24,7 @@ async def orders_list_view(message: types.Message, state: FSMContext):
         text, keyboard = inline_orders(orders=orders)
         await message.answer(text=text, reply_markup=keyboard)
     else:
-        await message.answer(text="К сожалению, у вас нет билетов")
+        await message.answer(text="К сожалению, у вас нет заказов")
 
 
 # Хэндлер по выводу списка заказов по inline кнопке +
@@ -33,15 +34,21 @@ async def callback_order_detail_view(callback: types.CallbackQuery, state: FSMCo
     orders = user_data.get("orders")
 
     text, keyboard = inline_orders(orders)
-    await callback.message.edit_text(text, reply_markup=keyboard)
+    await callback.message.edit_text(text=text, reply_markup=keyboard)
     await callback.answer()
 
 
 # Хэндлер по выводу данных заказа +
 @router.callback_query(User.logged_in, OrderInfo.filter())
-async def callback_order_details_view(callback: types.CallbackQuery, callback_data: OrderInfo):
-    text, keyboard = inline_order_data(callback_data.order_id)
-    await callback.message.edit_text(text, reply_markup=keyboard)
+async def callback_order_details_view(callback: types.CallbackQuery, callback_data: OrderInfo, state: FSMContext):
+    user_data = await state.get_data()
+    if user_data["orders"][callback_data.order_id]['invoice_url']:
+        is_invoice = True
+    else:
+        is_invoice = False
+
+    text, keyboard = inline_order_data(order_id=callback_data.order_id, is_invoice=is_invoice)
+    await callback.message.edit_text(text=text, reply_markup=keyboard)
     await callback.answer()
 
 

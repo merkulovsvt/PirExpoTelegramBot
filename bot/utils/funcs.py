@@ -1,13 +1,7 @@
 import os
 
 import requests
-from aiogram.fsm.state import State, StatesGroup
 from requests.auth import HTTPBasicAuth
-
-
-class User(StatesGroup):
-    logged_out = State()
-    logged_in = State()
 
 
 # TODO надо ускорить
@@ -20,31 +14,32 @@ def get_orders(phone: str):
     r = requests.get(url, auth=HTTPBasicAuth(login, password), params=payload)
     orders = {}
     for order in r.json():
-        if not order["cancelled_at"]:
+        if order["status"] == 3:
             for ticket in order["order_items"]:
                 if not ticket["cancelled"]:
                     if order["id"] not in orders:
                         orders[order["id"]] = {"tickets": [], "invoice_url": None}
-                    orders[order["id"]]["tickets"].append((ticket["id"], ticket_type(ticket["id"])))
-            if order["invoice"]:
+                    ticket_type = get_ticket_type(ticket["id"])
+                    if ticket_type:
+                        orders[order["id"]]["tickets"].append((ticket["id"], ticket_type))
+            if order.get("invoice"):
                 orders[order["id"]]["invoice_url"] = order["invoice"]["pdf_url"]
-                print(orders[order["id"]]["invoice_url"])
     return orders
 
 
-def ticket_type(ticket_id: int):
+def get_ticket_type(ticket_id: int):
     url = f"https://master.apiv2.pir.ru/api/v1/ticket/{ticket_id}"
     login = os.getenv("LOGIN")
     password = os.getenv("PASSWORD")
 
     r = requests.get(url, auth=HTTPBasicAuth(login, password))
-    try:
-        if r.json()["ticket_type"]["is_event"]:
+    data = r.json().get("ticket_type")
+    if data:
+        if data["is_event"]:
             return "event"
         else:
             return "entry"
-    except:
-        pass
+    return None
 
 
 def get_ticket_list(from_order: bool, orders: dict, ticket_type: str, order_id=-1) -> list:
