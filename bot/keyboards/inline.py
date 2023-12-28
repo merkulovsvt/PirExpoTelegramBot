@@ -83,12 +83,17 @@ def inline_tickets_list(tickets_list: list, ticket_type: str, from_order: bool, 
     text = ""
     builder = InlineKeyboardBuilder()
 
-    if ticket_type == "entry":
+    if ticket_type == "entry" and tickets_list:
         text = "Входные билеты:"
-    elif ticket_type == "event":
-        text = "Билеты на мероприятия:"
+        for ticket_id in tickets_list:
+            builder.button(
+                text=f"Билет №{ticket_id}",
+                callback_data=TicketInfo(order_id=order_id, from_order=from_order, ticket_id=ticket_id,
+                                         ticket_type=ticket_type))
 
-    if tickets_list:
+    elif ticket_type == "event" and tickets_list:
+        text = "Билеты на мероприятия:"
+        # TODO сортировка по датам
         for ticket_id in tickets_list:
             builder.button(
                 text=f"Билет №{ticket_id}",

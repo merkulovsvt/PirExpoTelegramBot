@@ -13,6 +13,7 @@ router = Router()
 @router.message(CommandStart())
 async def command_start(message: types.Message, state: FSMContext):
     user_data = await state.get_data()
+
     if not user_data:
         await state.set_state(User.logged_out)
 

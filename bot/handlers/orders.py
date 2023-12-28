@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 
 from bot.keyboards.inline import inline_order_data, inline_orders
 from bot.utils.callbackdata import OrderInfo
-from bot.utils.funcs import get_orders
+from bot.utils.funcs_orders import get_orders
 from bot.utils.states import User
 
 router = Router()

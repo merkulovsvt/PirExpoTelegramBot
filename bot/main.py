@@ -3,7 +3,7 @@ import logging
 import os
 
 from aiogram import Bot, Dispatcher
-from handlers import login, logout, orders, tickets
+from handlers import exhibitors, login, logout, orders, tickets, events
 
 
 async def main():
@@ -13,7 +13,7 @@ async def main():
     bot = Bot(token=os.getenv("BOT_TOKEN"))
     # Диспетчер
     dp = Dispatcher()
-    dp.include_routers(logout.router, login.router, orders.router, tickets.router)
+    dp.include_routers(logout.router, login.router, orders.router, tickets.router, exhibitors.router, events.router)
     await bot.delete_webhook(drop_pending_updates=True)
     # Запуск процесса поллинга новых апдейтов
     await dp.start_polling(bot)

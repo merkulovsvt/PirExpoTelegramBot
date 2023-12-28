@@ -1,6 +1,7 @@
 import os
 
 import requests
+from bot.utils.func_tickets import get_ticket_type
 from requests.auth import HTTPBasicAuth
 
 
@@ -27,31 +28,5 @@ def get_orders(phone: str):
     return orders
 
 
-def get_ticket_type(ticket_id: int):
-    url = f"https://master.apiv2.pir.ru/api/v1/ticket/{ticket_id}"
-    login = os.getenv("LOGIN")
-    password = os.getenv("PASSWORD")
-
-    r = requests.get(url, auth=HTTPBasicAuth(login, password))
-    data = r.json().get("ticket_type")
-    if data:
-        if data["is_event"]:
-            return "event"
-        else:
-            return "entry"
-    return None
-
-
-def get_ticket_list(from_order: bool, orders: dict, ticket_type: str, order_id=-1) -> list:
-    tickets_list = []
-    if from_order:
-        for t_id, t_type in orders[order_id]["tickets"]:
-            if t_type == ticket_type:
-                tickets_list.append(t_id)
-    else:
-        for o_id in orders:
-            for t_id, t_type in orders[o_id]["tickets"]:
-                if t_type == ticket_type:
-                    tickets_list.append(t_id)
-
-    return tickets_list
+def get_event_data():
+    pass

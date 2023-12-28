@@ -8,7 +8,8 @@ from aiogram.fsm.context import FSMContext
 from bot.keyboards.inline import (inline_ticket_data, inline_ticket_types,
                                   inline_tickets_list)
 from bot.utils.callbackdata import TicketInfo
-from bot.utils.funcs import get_orders, get_ticket_list
+from bot.utils.func_tickets import get_tickets_list
+from bot.utils.funcs_orders import get_orders
 from bot.utils.states import User
 
 router = Router()
@@ -55,10 +56,10 @@ async def ticket_inline_list_view(callback: types.CallbackQuery, state: FSMConte
     order_id = callback.data.split('_')[2]
 
     if order_id == "*":
-        tickets_list = get_ticket_list(from_order=False, orders=orders, ticket_type=ticket_type)
+        tickets_list = get_tickets_list(from_order=False, orders=orders, ticket_type=ticket_type)
         text, keyboard = inline_tickets_list(tickets_list=tickets_list, ticket_type=ticket_type, from_order=False)
     else:
-        tickets_list = get_ticket_list(from_order=True, orders=orders, ticket_type=ticket_type, order_id=int(order_id))
+        tickets_list = get_tickets_list(from_order=True, orders=orders, ticket_type=ticket_type, order_id=int(order_id))
         text, keyboard = inline_tickets_list(tickets_list=tickets_list, ticket_type=ticket_type, from_order=True,
                                              order_id=order_id)
 
