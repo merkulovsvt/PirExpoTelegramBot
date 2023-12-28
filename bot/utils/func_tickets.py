@@ -19,6 +19,7 @@ def get_ticket_type(ticket_id: int):
     return None
 
 
+# TODO это не ticket_type это из is_event ПОМЕНЯТЬ!
 def get_tickets_list(from_order: bool, orders: dict, ticket_type: str, order_id=-1) -> list:
     tickets_list = []
 

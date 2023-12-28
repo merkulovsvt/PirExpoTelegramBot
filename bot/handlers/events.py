@@ -1,7 +1,7 @@
 from aiogram import F, Router, types
 from aiogram.enums import ChatAction
 from aiogram.fsm.context import FSMContext
-
+from bot.keyboards.inline import event_start_menu
 
 from bot.utils.states import User
 from bot.utils.func_events import load_events
@@ -20,7 +20,8 @@ async def events_list_view(message: types.Message, state: FSMContext):
         events = load_events()
         await state.update_data(events=events)
 
-    await message.answer(text="i have the data")
+    text, keyboard = event_start_menu()
+    await message.answer(text=text, reply_markup=keyboard)
 
     # if orders:
     #     text, keyboard = inline_orders(orders=orders)

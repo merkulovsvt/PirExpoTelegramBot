@@ -48,3 +48,5 @@ def get_booth_data(booths: list):
     for booth in booths:
         booth_data[booth["id"]] = {"booth_number": booth["booth_number"], "hall_number": booth["hall_number"]}
     return booth_data
+
+# def form_

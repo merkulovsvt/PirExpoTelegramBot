@@ -11,3 +11,13 @@ def reply_main(phone: str):
         builder.add(KeyboardButton(text=elem))
     builder.adjust(1, 2, 2)
     return text, builder.as_markup(resize_keyboard=True)
+
+
+def reply_exhibitors():
+    buttons = "Отменить поиск"
+    text = f"Вы вернулись в главное меню!"
+
+    builder = ReplyKeyboardBuilder()
+    builder.add(KeyboardButton(text=buttons))
+
+    return text, builder.as_markup(resize_keyboard=True)

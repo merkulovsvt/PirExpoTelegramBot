@@ -5,3 +5,7 @@ class User(StatesGroup):
     logged_out = State()
     registrating = State()
     logged_in = State()
+
+
+class Exhibitors(StatesGroup):
+    searching = State()

@@ -141,3 +141,26 @@ def inline_ticket_data(order_id: int, from_order: bool, ticket_id: int, ticket_t
     builder.adjust(2, 1, 1)
 
     return text, builder.as_markup()
+
+
+# Клавиатура для меню поиска экспонентов +
+def exhibitors_search_menu(first_launch: bool):
+    builder = InlineKeyboardBuilder()
+
+    text = "Это меню поиска экспонентов. Нажмите на кнопку для продолжения."
+    if first_launch:
+        builder.button(text="Начать поиск", callback_data="search_exhibitor")
+    else:
+        builder.button(text="Продолжить поиск?", callback_data="search_exhibitor")
+        builder.button(text="Отменить поиск", callback_data="stop_search_exhibitor")
+    return text, builder.as_markup()
+
+
+def event_start_menu():
+    builder = InlineKeyboardBuilder()
+
+    text = "Выберите кнопку"
+    builder.button(text="Мои мероприятия", callback_data="search_exhibitor")
+    builder.button(text="Все мероприятия", callback_data="search_exhibitor")
+    builder.button(text="Бесплатные мероприятия", callback_data="search_exhibitor")
+    return text, builder.as_markup()
