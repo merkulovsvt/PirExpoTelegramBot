@@ -12,11 +12,11 @@ load_dotenv()
 # TODO надо ускорить
 def get_orders(phone: str):
     url = "https://master.apiv2.pir.ru/api/v1/order/list"
-    payload = {"phone": phone}
+    params = {"phone": phone}
     login = os.getenv("LOGIN")
     password = os.getenv("PASSWORD")
 
-    r = requests.get(url, auth=HTTPBasicAuth(login, password), params=payload)
+    r = requests.get(url, auth=HTTPBasicAuth(login, password), params=params)
     orders = {}
     for order in r.json():
         if order["status"] == 3:
