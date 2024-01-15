@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="560ea983-6ec4-4a2c-bbf4-39f61bbfe4e0" name="Changes" comment="TEST" />
+    <list default="true" id="560ea983-6ec4-4a2c-bbf4-39f61bbfe4e0" name="Changes" comment="TEST2">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -101,7 +103,7 @@
       <workItem from="1704988198075" duration="274000" />
       <workItem from="1705160744697" duration="438000" />
       <workItem from="1705161191618" duration="908000" />
-      <workItem from="1705332325050" duration="16352000" />
+      <workItem from="1705332325050" duration="16800000" />
     </task>
     <task id="LOCAL-00001" summary="Небольшие доработки">
       <option name="closed" value="true" />
@@ -143,7 +145,15 @@
       <option name="project" value="LOCAL" />
       <updated>1705359885333</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="TEST2">
+      <option name="closed" value="true" />
+      <created>1705360734436</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1705360734436</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -197,7 +207,8 @@
     <MESSAGE value="Небольшие доработки" />
     <MESSAGE value="Улучшена логика входа и ещё небольшие изменения" />
     <MESSAGE value="TEST" />
-    <option name="LAST_COMMIT_MESSAGE" value="TEST" />
+    <MESSAGE value="TEST2" />
+    <option name="LAST_COMMIT_MESSAGE" value="TEST2" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/TelegramBot$main.coverage" NAME="main Coverage Results" MODIFIED="1705356976586" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/bot" />
