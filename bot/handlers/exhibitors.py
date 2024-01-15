@@ -3,7 +3,7 @@ from aiogram.enums import ChatAction
 from aiogram.fsm.context import FSMContext
 
 from bot.keyboards.inline import exhibitors_search_menu
-from bot.keyboards.reply import reply_exhibitors, reply_main
+from bot.keyboards.reply import reply_main_menu, reply_stop_exhibitors_search
 from bot.utils.func_exhibitors import load_exhibitors
 from bot.utils.states import Exhibitors, User
 
@@ -29,7 +29,7 @@ async def exhibitor_menu_view(message: types.Message, state: FSMContext):
 @router.callback_query(F.data == "search_exhibitor")
 async def callback_order_detail_view(callback: types.CallbackQuery, state: FSMContext):
     # await callback.message.delete()
-    text, keyboard = reply_exhibitors()
+    text, keyboard = reply_stop_exhibitors_search()
     await callback.message.answer("Введите название компании:", reply_markup=keyboard)
     await state.set_state(Exhibitors.searching)
     await callback.answer()
@@ -41,7 +41,7 @@ async def callback_order_detail_view(callback: types.CallbackQuery, state: FSMCo
     await callback.message.delete()
 
     user_data = await state.get_data()
-    text, keyboard = reply_main(phone=user_data.get("phone"))
+    text, keyboard = reply_main_menu(phone=user_data.get("phone"))
     await state.set_state(User.logged_in)
     await callback.message.answer(text="Вы вернулись в главное меню.", reply_markup=keyboard)
     await callback.answer()
@@ -53,7 +53,7 @@ async def callback_order_detail_view(message: types.Message, state: FSMContext):
     # await message.delete()
 
     user_data = await state.get_data()
-    text, keyboard = reply_main(phone=user_data.get("phone"))
+    text, keyboard = reply_main_menu(phone=user_data.get("phone"))
     await state.set_state(User.logged_in)
     await message.answer(text="Вы вернулись в главное меню.", reply_markup=keyboard)
 
@@ -80,6 +80,6 @@ async def callback_order_detail_view(message: types.Message, state: FSMContext):
             break
     else:
         text = "Неверное название компании.\nПопробуйте снова"
-        a, keyboard = reply_exhibitors()
+        a, keyboard = reply_stop_exhibitors_search()
         await message.answer(text=text, reply_markup=keyboard, parse_mode="")
     # await message.answer("Введите название компании:")
