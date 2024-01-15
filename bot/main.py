@@ -3,7 +3,10 @@ import logging
 import os
 
 from aiogram import Bot, Dispatcher
-from handlers import exhibitors, login, logout, orders, tickets, events
+from dotenv import load_dotenv
+from handlers import events, exhibitors, login, logout, orders, tickets
+
+load_dotenv()
 
 
 async def main():

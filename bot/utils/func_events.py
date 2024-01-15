@@ -2,11 +2,14 @@ import json
 import os
 
 import requests
+from dotenv import load_dotenv
 from requests.auth import HTTPBasicAuth
+
+load_dotenv()
 
 
 def load_events():
-    json_path = os.getcwd() + "\\bot\\static\\events_data.json"
+    json_path = os.path.join(os.getcwd(), 'static', 'events_data.json')
     try:
         with open(json_path, "r", encoding="utf-8") as json_file:
             try:

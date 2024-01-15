@@ -1,7 +1,10 @@
 import os
 
 import requests
+from dotenv import load_dotenv
 from requests.auth import HTTPBasicAuth
+
+load_dotenv()
 
 
 def get_ticket_type(ticket_id: int):

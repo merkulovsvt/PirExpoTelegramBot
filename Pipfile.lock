@@ -1,12 +1,12 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "2d71a5268efc221fd0107f677b3904d3f433f7a5ff213d7552811cf2a82e9207"
+            "sha256": "807cbe48667d42cd7835b2c65522be19dbb295e8e5fa9d2c5c57cc5d51a34ab2"
         },
         "pipfile-spec": 6,
         "requires": {
-            "python_full_version": "3.8.0",
-            "python_version": "3.8"
+            "python_full_version": "3.10.11",
+            "python_version": "3.10"
         },
         "sources": [
             {
@@ -153,11 +153,11 @@
         },
         "attrs": {
             "hashes": [
-                "sha256:1f28b4522cdc2fb4256ac1a020c78acf9cba2c6b461ccd2c126f3aa8e8335d04",
-                "sha256:6279836d581513a26f1bf235f9acd333bc9115683f14f7e8fae46c98fc50e015"
+                "sha256:935dc3b529c262f6cf76e50877d35a4bd3c1de194fd41f47a2b7ae8f19971f30",
+                "sha256:99b87a485a5820b23b879f04c2305b44b951b502fd64be915879d77a7e8fc6f1"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==23.1.0"
+            "version": "==23.2.0"
         },
         "certifi": {
             "hashes": [
@@ -570,6 +570,15 @@
             ],
             "markers": "python_version >= '3.7'",
             "version": "==2.6.3"
+        },
+        "python-dotenv": {
+            "hashes": [
+                "sha256:a8df96034aae6d2d50a4ebe8216326c61c3eb64836776504fcca410e5937a3ba",
+                "sha256:f5971a9226b701070a4bf2c38c89e5a3f0d64de8debda981d1db98583009122a"
+            ],
+            "index": "pypi",
+            "markers": "python_version >= '3.8'",
+            "version": "==1.0.0"
         },
         "requests": {
             "hashes": [

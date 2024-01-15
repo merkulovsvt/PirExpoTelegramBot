@@ -1,8 +1,12 @@
 import os
 
 import requests
-from bot.utils.func_tickets import get_ticket_type
+from dotenv import load_dotenv
 from requests.auth import HTTPBasicAuth
+
+from bot.utils.func_tickets import get_ticket_type
+
+load_dotenv()
 
 
 # TODO надо ускорить

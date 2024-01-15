@@ -8,8 +8,8 @@ from aiogram.fsm.context import FSMContext
 from bot.keyboards.inline import (inline_ticket_data, inline_ticket_types,
                                   inline_tickets_list)
 from bot.utils.callbackdata import TicketInfo
-from bot.utils.func_tickets import get_tickets_list
 from bot.utils.func_orders import get_orders
+from bot.utils.func_tickets import get_tickets_list
 from bot.utils.states import User
 
 router = Router()
