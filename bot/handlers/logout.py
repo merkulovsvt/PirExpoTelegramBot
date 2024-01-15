@@ -8,9 +8,9 @@ from bot.utils.states import User
 router = Router()
 
 
-# Хэндлер по выходу из системы ?
+# Хэндлер по выходу из системы +
 @router.message(User.logged_in, Command("logout"))
 async def logout(message: Message, state: FSMContext):
-    await state.clear()
-    await message.reply("Вы успешно вышли из системы", reply_markup=ReplyKeyboardRemove())
+    await message.answer("Вы успешно вышли из системы", reply_markup=ReplyKeyboardRemove())
     await message.answer("/start")
+    await state.clear()

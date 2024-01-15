@@ -3,45 +3,39 @@ from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 
 from bot.keyboards.inline import inline_start
-from bot.keyboards.reply import reply_main
+from bot.keyboards.reply import reply_get_phone_number, reply_main_menu
 from bot.utils.states import User
 
 router = Router()
 
 
-# Хэндлер /start ?
+# Хэндлер для команды /start +
 @router.message(CommandStart())
 async def command_start(message: types.Message, state: FSMContext):
+    text, keyboard = inline_start()
+    await message.answer(text=text, reply_markup=keyboard)
+
     user_data = await state.get_data()
 
     if not user_data:
         await state.set_state(User.logged_out)
-
-    text, keyboard = inline_start(user_data)
-    await message.answer(text, reply_markup=keyboard)
-
-
-# Хэндлер по извлечению номера телефона из сообщения ?
-@router.callback_query(User.logged_out, F.data == "registration")
-async def callback_user_login(callback: types.CallbackQuery, state: FSMContext):
-    await callback.message.answer(
-        "Введите ваш номер телефона, что вы указывали при покупке билетов. В формате +79161754807:")
-    await state.set_state(User.registrating)
-    await callback.answer()
+        text, keyboard = reply_get_phone_number()
+        await message.answer(text="Зарегистрируйтесь, поделившись с нами номером телефона", reply_markup=keyboard)
 
 
-# Хэндлер по извлечению номера телефона из сообщения ?
-@router.message(User.registrating)
+# Хендлер для обработки неверных ответов при регистрации +
+@router.message(User.logged_out, ~F.contact)
+async def user_login(message: types.Message):
+    await message.answer(text="Зарегистрируйтесь, поделившись с нами номером вашего телефона")
+
+
+# Хендлер для обработки пользовательского номера телефона +
+@router.message(User.logged_out, F.contact)
 async def user_login(message: types.Message, state: FSMContext):
-    entities = message.entities or []
+    phone = message.contact.phone_number
 
-    if len(entities) == 1 and entities[0].type == 'phone_number':
-        phone = entities[0].extract_from(message.text)
+    await state.set_state(User.logged_in)
+    await state.update_data(phone=phone)
 
-        await state.update_data(phone=phone)
-        await state.set_state(User.logged_in)
-
-        text, keyboard = reply_main(phone=phone)
-        await message.answer(text=text, reply_markup=keyboard)
-    else:
-        await message.reply("Некорректный формат данных.")
+    text, keyboard = reply_main_menu(phone=phone)
+    await message.answer(text=text, reply_markup=keyboard)
