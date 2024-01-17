@@ -2,11 +2,10 @@ from aiogram.filters.callback_data import CallbackData
 
 
 class OrderInfo(CallbackData, prefix="order"):
-    order_id: int
+    order_id: str
 
 
 class TicketInfo(CallbackData, prefix="ticket"):
-    order_id: int
-    from_order: bool
-    ticket_id: int
+    order_id: str
+    ticket_id: str
     ticket_type: str

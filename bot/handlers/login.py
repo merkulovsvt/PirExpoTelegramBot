@@ -1,15 +1,28 @@
-from aiogram import F, Router, types
+from aiogram import F, Router, types, Dispatcher
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 
-from bot.keyboards.inline import inline_start
-from bot.keyboards.reply import reply_get_phone_number, reply_main_menu
+from bot.keyboards.login_boards import (inline_start, reply_send_phone_number,
+                                        reply_main_menu)
 from bot.utils.states import User
 
 router = Router()
 
 
-# Хэндлер для команды /start +
+# @router.startup()
+# async def notify_message(dp: Dispatcher):
+    # last_state = await state.get_state()
+    # await state.set_state(User.logged_out)
+    # cur_state = await state.get_state()
+    # print(cur_state)
+    # await state.set_state()
+    # cur_state = await state.get_state()
+    # print(cur_state)
+    # await state.set_state(last_state)
+    # return
+
+
+# Хендлер для команды /start +
 @router.message(CommandStart())
 async def command_start(message: types.Message, state: FSMContext):
     text, keyboard = inline_start()
@@ -19,8 +32,12 @@ async def command_start(message: types.Message, state: FSMContext):
 
     if not user_data:
         await state.set_state(User.logged_out)
-        text, keyboard = reply_get_phone_number()
-        await message.answer(text="Зарегистрируйтесь, поделившись с нами номером телефона", reply_markup=keyboard)
+        text, keyboard = reply_send_phone_number()
+        await message.answer(text=text, reply_markup=keyboard)
+    else:
+        await state.set_state(User.logged_in)
+        text, keyboard = reply_main_menu(phone=user_data['phone'])
+        await message.answer(text=text, reply_markup=keyboard)
 
 
 # Хендлер для обработки неверных ответов при регистрации +

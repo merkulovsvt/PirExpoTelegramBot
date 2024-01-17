@@ -2,15 +2,15 @@ from aiogram import F, Router, types
 from aiogram.enums import ChatAction
 from aiogram.fsm.context import FSMContext
 
-from bot.keyboards.inline import event_start_menu
-from bot.utils.func_events import load_events
+from bot.keyboards.events_boards import event_start_menu
+from bot.data.func_events import load_events
 from bot.utils.states import User
 
 router = Router()
 
 
-# Хэндлер
-@router.message(User.logged_in, F.text.lower() == "мероприятия")
+# Хендлер
+@router.message(User.logged_in, F.text.lower() == "🎉 мероприятия")
 async def events_list_view(message: types.Message, state: FSMContext):
     user_data = await state.get_data()
     events = user_data.get("events")

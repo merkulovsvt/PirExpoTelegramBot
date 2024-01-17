@@ -1,24 +1,28 @@
 import asyncio
 import logging
-import os
 
 from aiogram import Bot, Dispatcher
+from aiogram.fsm.storage.redis import RedisStorage
+from aioredis import Redis
 from dotenv import load_dotenv
-from handlers import events, exhibitors, login, logout, orders, tickets
+
+from bot.utils.config import token
+from handlers import events, exhibitors, login, logout, orders
+from new_handlers import tickets
 
 load_dotenv()
 
 
 async def main():
-    # Включаем логирование, чтобы не пропустить важные сообщения
+    bot = Bot(token=token)
     logging.basicConfig(level=logging.INFO)
-    # Объект бота
-    bot = Bot(token=os.getenv("BOT_TOKEN"))
-    # Диспетчер
-    dp = Dispatcher()
-    dp.include_routers(logout.router, login.router, orders.router, tickets.router, exhibitors.router, events.router)
+    # await set_commands(bot)
+
+    redis = Redis()
+    dp = Dispatcher(storage=RedisStorage(redis))
+    dp.include_routers(login.router, logout.router, orders.router, tickets.router, exhibitors.router, events.router)
+
     await bot.delete_webhook(drop_pending_updates=True)
-    # Запуск процесса поллинга новых апдейтов
     await dp.start_polling(bot)
 
 

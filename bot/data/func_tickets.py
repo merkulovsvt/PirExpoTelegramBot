@@ -35,9 +35,9 @@ def get_tickets_list(from_order: bool, orders: dict, ticket_type: str, order_id=
         for t_id, t_type in orders[o_id]["tickets"]:
             if t_type == ticket_type:
                 if ticket_type == "entry":
-                    tickets_list.append(t_id)
+                    tickets_list.append(str(t_id))
                 elif ticket_type == "event":
                     # TODO разделение по датам
-                    tickets_list.append(t_id)
+                    tickets_list.append(str(t_id))
 
     return tickets_list
