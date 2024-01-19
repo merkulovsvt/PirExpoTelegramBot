@@ -23,13 +23,13 @@ def get_tickets_list(chat_id: int, *order_id) -> dict:
         return data
 
 
-def get_ticket_data(ticket_id: str) -> dict:
+def get_ticket_details(ticket_id: str) -> dict:
     # url = "https://master.apiv2.pir.ru/api/v1/order/list"
     # params = {"ticket_id": ticket_id}
     #
     # tickets_list = requests.get(url, auth=HTTPBasicAuth(login, password), params=params)
     # return tickets_list.json()
-    json_path = os.path.join(os.getcwd(), 'static', 'ticket_data.json')
+    json_path = os.path.join(os.getcwd(), 'static', 'ticket_details.json')
     with open(json_path, "r", encoding="utf-8") as json_file:
         data = json.load(json_file)
         return data

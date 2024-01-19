@@ -1,24 +1,20 @@
 from aiogram import F, Router, types
 from aiogram.enums import ChatAction
-from aiogram.fsm.context import FSMContext
 
-from bot.keyboards.orders_boards import inline_order_data, inline_orders_list
+from bot.data.orders_data import get_order_details, get_orders_list
+from bot.keyboards.orders_boards import (inline_order_details,
+                                         inline_orders_list)
 from bot.utils.callbackdata import OrderInfo
-from bot.data.func_orders import get_orders
-from bot.utils.states import User
+from bot.utils.filters import LoggedIn
 
 router = Router()
 
 
 # Хендлер по выводу списка заказов по reply кнопке +
-@router.message(User.logged_in, F.text.lower() == "🛒 заказы")
-async def orders_list_view(message: types.Message, state: FSMContext):
-    user_data = await state.get_data()
-    orders = user_data.get("orders")
+@router.message(LoggedIn(), F.text.lower() == "🛒 заказы")
+async def orders_list_view(message: types.Message):
     await message.bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.TYPING)
-    if not orders:
-        orders = get_orders(phone=user_data["phone"])
-        await state.update_data(orders=orders)
+    orders = get_orders_list(chat_id=message.chat.id)
 
     if orders:
         text, keyboard = inline_orders_list(orders=orders)
@@ -27,37 +23,36 @@ async def orders_list_view(message: types.Message, state: FSMContext):
         await message.answer(text="К сожалению, у вас нет заказов")
 
 
-# Хендлер по выводу списка заказов по inline кнопке
-@router.callback_query(User.logged_in, F.data == "orders")
-async def callback_order_detail_view(callback: types.CallbackQuery, state: FSMContext):
-    user_data = await state.get_data()
-    orders = user_data.get("orders")
+# Хендлер по выводу списка заказов по inline кнопке +
+@router.callback_query(LoggedIn(), F.data == "orders")
+async def callback_orders_list_view(callback: types.CallbackQuery):
+    orders = get_orders_list(chat_id=callback.message.chat.id)
 
-    text, keyboard = inline_orders_list(orders)
-    await callback.message.edit_text(text=text, reply_markup=keyboard)
-    await callback.answer()
-
-
-# Хендлер по выводу данных заказа
-@router.callback_query(User.logged_in, OrderInfo.filter())
-async def callback_order_details_view(callback: types.CallbackQuery, callback_data: OrderInfo, state: FSMContext):
-    user_data = await state.get_data()
-    if user_data["orders"][str(callback_data.order_id)]["invoice_url"] is not None:
-        is_invoice = True
+    if orders:
+        text, keyboard = inline_orders_list(orders=orders)
+        await callback.message.edit_text(text=text, reply_markup=keyboard)
     else:
-        is_invoice = False
+        await callback.message.edit_text(text="К сожалению, у вас нет заказов")
+    await callback.answer()
 
-    text, keyboard = inline_order_data(order_id=callback_data.order_id, is_invoice=is_invoice)
+
+# Хендлер по выводу деталей заказа +
+@router.callback_query(LoggedIn(), OrderInfo.filter())
+async def callback_order_details_view(callback: types.CallbackQuery, callback_data: OrderInfo):
+    order_id = callback_data.order_id
+    order_details = get_order_details(order_id=order_id)
+
+    text, keyboard = inline_order_details(order_id=order_id, order_details=order_details)
     await callback.message.edit_text(text=text, reply_markup=keyboard)
     await callback.answer()
 
 
-# Хендлер по отправке счета заказа
-@router.callback_query(User.logged_in, F.data.startswith("invoice_"))
-async def callback_order_invoice_view(callback: types.CallbackQuery, state: FSMContext):
-    order_id = int(callback.data.split("_")[1])
-    user_data = await state.get_data()
-    pdf_url = user_data["orders"][order_id]["invoice_url"]
+# Хендлер по отправке счета заказа +
+@router.callback_query(LoggedIn(), F.data.startswith("invoice_print_"))
+async def callback_order_invoice_send(callback: types.CallbackQuery):
+    order_id = callback.data.split("_")[2]
+    order_details = get_order_details(order_id=order_id)
+    pdf_url = order_details["invoice_url"]
 
     if pdf_url:
         await callback.message.bot.send_chat_action(chat_id=callback.message.chat.id, action=ChatAction.UPLOAD_DOCUMENT)

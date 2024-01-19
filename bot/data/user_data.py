@@ -1,19 +1,23 @@
-import requests
-from requests.auth import HTTPBasicAuth
-
-from bot.utils.config import login, password
+import json
+import os
 
 
-def post_user_data(chat_id: int, phone_number: str, logged_in: bool) -> None:
-    url = "https://master.apiv2.pir.ru/api/v1/order/list"
-    params = {"chat_id": chat_id, "phone_number": phone_number, "logged_in": logged_in}
-
-    requests.post(url, auth=HTTPBasicAuth(login, password), params=params)
+async def put_user_data(chat_id: int, state: str, phone_number=None) -> None:
+    # url = "https://master.apiv2.pir.ru/api/v1/order/list"
+    # params = {"chat_id": chat_id, "phone_number": phone_number, "state": state}
+    #
+    # requests.post(url, auth=HTTPBasicAuth(login, password), params=params)
+    zaza = 1
 
 
 def get_user_data(chat_id: int) -> dict:
-    url = "https://master.apiv2.pir.ru/api/v1/order/list"
-    params = {"chat_id ": chat_id}
+    # url = "https://master.apiv2.pir.ru/api/v1/order/list"
+    # params = {"chat_id ": chat_id}
+    #
+    # tickets_list = requests.get(url, auth=HTTPBasicAuth(login, password), params=params)
+    # return tickets_list.json()
 
-    tickets_list = requests.get(url, auth=HTTPBasicAuth(login, password), params=params)
-    return tickets_list.json()
+    json_path = os.path.join(os.getcwd(), 'static', 'user_data.json')
+    with open(json_path, "r", encoding="utf-8") as json_file:
+        data = json.load(json_file)
+        return data

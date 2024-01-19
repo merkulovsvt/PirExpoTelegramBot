@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from bot.utils.callbackdata import TicketInfo, OrderInfo
+from bot.utils.callbackdata import OrderInfo, TicketInfo
 
 
 # Inline клавиатура для выбора типа билета +
@@ -61,20 +61,20 @@ def inline_tickets_list(tickets: dict, ticket_type: str, order_id: str):
     return text, builder.as_markup()
 
 
-# Inline клавиатура для вывода данных билета
-def inline_ticket_data(ticket_data: dict, order_id: str, ticket_id: str, ticket_type: str):
+# Inline клавиатура для вывода деталей билета ~
+def inline_ticket_details(ticket_details: dict, order_id: str, ticket_id: str, ticket_type: str):
     builder = InlineKeyboardBuilder()
 
     builder.button(text="Скачать", callback_data=f"ticket_print_{ticket_id}")
     builder.button(text="Вернуть", url="zaza.com")  # Ждём ссылку от Леши
 
     if ticket_type == "entry":
-        text = f"Входной билет №{ticket_id} на {ticket_data['ticket_owner_name']}"
+        text = f"Входной билет №{ticket_id} на {ticket_details['ticket_owner_name']}"
         builder.button(text="Редактировать", url="zaza.com")  # Ждём ссылку от Леши
 
     # elif ticket_type == "event":
     else:
-        text = f"Билет №{ticket_id} на мероприятие {ticket_data['event_name']}"
+        text = f"Билет №{ticket_id} на мероприятие {ticket_details['event_name']}"
         builder.button(text="Информация о мероприятии", callback_data="121231312335")  # Доделать
 
     if order_id != "*":

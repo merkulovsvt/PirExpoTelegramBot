@@ -2,8 +2,8 @@ from aiogram import F, Router, types
 from aiogram.enums import ChatAction
 from aiogram.fsm.context import FSMContext
 
-from bot.keyboards.events_boards import event_start_menu
 from bot.data.func_events import load_events
+from bot.keyboards.events_boards import event_start_menu
 from bot.utils.states import User
 
 router = Router()

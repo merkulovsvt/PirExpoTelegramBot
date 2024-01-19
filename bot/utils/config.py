@@ -13,5 +13,6 @@ token = os.getenv("BOT_TOKEN")
 
 
 async def set_commands(bot: Bot):
-    await bot.set_my_commands([BotCommand(command='start', description='Запустить бота'),
-                               BotCommand(command='logout', description='Выход из профиля')])
+    await bot.set_my_commands([BotCommand(command="start", description="Запустить бота"),
+                               BotCommand(command="info", description="Инфо"),
+                               BotCommand(command="logout", description="Выход из профиля")])

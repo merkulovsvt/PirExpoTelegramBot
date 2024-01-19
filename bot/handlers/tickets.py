@@ -1,85 +1,88 @@
-import os
-
 import aiohttp
 from aiogram import F, Router, types
 from aiogram.enums import ChatAction
-from aiogram.fsm.context import FSMContext
 
-from bot.keyboards.tickets_boards import (inline_ticket_data,
+from bot.data.tickets_data import get_ticket_details, get_tickets_list
+from bot.keyboards.tickets_boards import (inline_ticket_details,
                                           inline_ticket_types,
                                           inline_tickets_list)
 from bot.utils.callbackdata import TicketInfo
-from bot.data.func_orders import get_orders
-from bot.data.func_tickets import get_tickets_list
-from bot.utils.states import User
+from bot.utils.config import login, password
+from bot.utils.filters import LoggedIn
 
 router = Router()
 
 
-# Хендлер по выбору типа билета по reply кнопке +
-@router.message(User.logged_in, F.text.lower() == "🎫 билеты")
-async def ticket_reply_type_view(message: types.Message, state: FSMContext):
-    user_data = await state.get_data()
-    orders = user_data.get("orders")
+# Хендлер по выбору типа билета по reply кнопки +
+@router.message(LoggedIn(), F.text.lower() == "🎫 билеты")
+async def ticket_type_view(message: types.Message):
     await message.bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.TYPING)
-    if not orders:
-        orders = get_orders(phone=user_data["phone"])
-        await state.update_data(orders=orders)
+    tickets = get_tickets_list(chat_id=message.chat.id)
 
-    if orders:
-        text, keyboard = inline_ticket_types(from_order=False)
+    if tickets:
+        text, keyboard = inline_ticket_types()
         await message.answer(text=text, reply_markup=keyboard)
     else:
         await message.answer(text="К сожалению, у вас нет билетов")
 
 
-# Хендлер по выбору типа билета по inline кнопке (отдельно/из заказа) +
-@router.callback_query(User.logged_in, F.data.startswith("ticket_types_"))
-async def ticket_inline_type_view(callback: types.CallbackQuery):
-    order_id = callback.data.split('_')[2]
-    print(order_id, type(order_id))
-    if order_id == "*":
-        text, keyboard = inline_ticket_types(from_order=False)
-    else:
-        text, keyboard = inline_ticket_types(from_order=True, order_id=order_id)
+# Хендлер по выбору типа билета по inline кнопки +
+@router.callback_query(LoggedIn(), F.data.startswith("ticket_types"))
+async def callback_ticket_type_view(callback: types.CallbackQuery):
+    tickets = get_tickets_list(chat_id=callback.message.chat.id)
 
-    await callback.message.edit_text(text=text, reply_markup=keyboard)
+    if tickets:
+        text, keyboard = inline_ticket_types()
+        await callback.message.edit_text(text=text, reply_markup=keyboard)
+    else:
+        await callback.message.edit_text(text="К сожалению, у вас нет билетов")
+
     await callback.answer()
 
 
-# Хендлер по выводу билетов конкретного типа +
-@router.callback_query(User.logged_in, F.data.startswith("tickets_"))
-async def ticket_inline_list_view(callback: types.CallbackQuery, state: FSMContext):
-    user_data = await state.get_data()
-    orders = user_data["orders"]
+# Хендлер по выводу списка билетов +
+@router.callback_query(LoggedIn(), F.data.startswith("tickets_"))
+async def callback_ticket_list_view(callback: types.CallbackQuery):
+    tickets = get_tickets_list(chat_id=callback.message.chat.id)
+    ticket_type = callback.data.split("_")[1]
+    order_id = callback.data.split("_")[2]
 
-    ticket_type = callback.data.split('_')[1]
-    order_id = callback.data.split('_')[2]
-
-    if order_id == "*":
-        tickets_list = get_tickets_list(from_order=False, orders=orders, ticket_type=ticket_type)
-        text, keyboard = inline_tickets_list(tickets_list=tickets_list, ticket_type=ticket_type, from_order=False)
-    else:
-        tickets_list = get_tickets_list(from_order=True, orders=orders, ticket_type=ticket_type, order_id=order_id)
-        text, keyboard = inline_tickets_list(tickets_list=tickets_list, ticket_type=ticket_type, from_order=True,
-                                             order_id=order_id)
-
+    text, keyboard = inline_tickets_list(tickets=tickets, ticket_type=ticket_type, order_id=order_id)
     await callback.message.edit_text(text=text, reply_markup=keyboard)
     await callback.answer()
 
 
 # Хендлер по выводу данных билета +
-@router.callback_query(User.logged_in, TicketInfo.filter())
+@router.callback_query(LoggedIn(), TicketInfo.filter())
 async def callback_ticket_details_view(callback: types.CallbackQuery, callback_data: TicketInfo):
     order_id = callback_data.order_id
-    from_order = callback_data.from_order
     ticket_id = callback_data.ticket_id
     ticket_type = callback_data.ticket_type
 
-    text, keyboard = inline_ticket_data(order_id=order_id, from_order=from_order, ticket_id=ticket_id,
-                                        ticket_type=ticket_type)
+    ticket_details = get_ticket_details(ticket_id=ticket_id)
+    text, keyboard = inline_ticket_details(ticket_details=ticket_details, order_id=order_id,
+                                           ticket_id=ticket_id, ticket_type=ticket_type)
 
     await callback.message.edit_text(text, reply_markup=keyboard)
     await callback.answer()
 
 
+# Хендлер по отправке pdf билета +
+@router.callback_query(LoggedIn(), F.data.startswith("ticket_print_"))
+async def callback_ticket_print_view(callback: types.CallbackQuery):
+    ticket_id = callback.data.split('_')[2]
+    url = f"https://master.apiv2.pir.ru/api/v1/ticket/{ticket_id}/print?pdf"
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, auth=aiohttp.BasicAuth(login, password)) as response:
+            if response.status == 200:
+                result = await response.read()
+                await callback.message.bot.send_chat_action(chat_id=callback.message.chat.id,
+                                                            action=ChatAction.UPLOAD_DOCUMENT)
+
+                await callback.bot.send_document(callback.message.chat.id, document=types.BufferedInputFile(
+                    file=result, filename=f'Билет #{ticket_id}.pdf'), caption=f"Билет #{ticket_id}")
+            else:
+                await callback.message.answer(text=f"К сожалению, не можем прислать билет №{ticket_id}")
+
+    await callback.answer()

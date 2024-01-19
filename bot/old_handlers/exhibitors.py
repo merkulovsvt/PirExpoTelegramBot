@@ -2,10 +2,10 @@ from aiogram import F, Router, types
 from aiogram.enums import ChatAction
 from aiogram.fsm.context import FSMContext
 
+from bot.data.func_exhibitors import load_exhibitors
 from bot.keyboards.exhibitors_boards import (inline_exhibitors_search_menu,
                                              reply_stop_exhibitors_search)
-from bot.keyboards.login_boards import reply_main_menu
-from bot.data.func_exhibitors import load_exhibitors
+from bot.keyboards.user_boards import reply_main_menu
 from bot.utils.states import Exhibitors, User
 
 router = Router()
