@@ -9,3 +9,8 @@ class TicketInfo(CallbackData, prefix="ticket"):
     order_id: str
     ticket_id: str
     ticket_type: str
+
+class EventInfo(CallbackData, prefix="event"):
+    event_id: str
+    theme_id: str
+    ticket_type: str

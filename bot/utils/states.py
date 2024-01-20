@@ -3,7 +3,6 @@ from aiogram.fsm.state import State, StatesGroup
 
 class User(StatesGroup):
     logged_in = State()
-    logging_in = State()
     logged_out = State()
 
 

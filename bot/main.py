@@ -3,9 +3,9 @@ import logging
 
 from aiogram import Bot, Dispatcher
 
+from bot.old_handlers import exhibitors
 from bot.utils.config import set_commands, token
-from handlers import orders, tickets, user
-from old_handlers import events, exhibitors
+from handlers import orders, tickets, user, events
 
 
 async def main():

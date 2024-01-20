@@ -7,7 +7,6 @@ from bot.keyboards.tickets_boards import (inline_ticket_details,
                                           inline_ticket_types,
                                           inline_tickets_list)
 from bot.utils.callbackdata import TicketInfo
-from bot.utils.config import login, password
 from bot.utils.filters import LoggedIn
 
 router = Router()
@@ -17,7 +16,7 @@ router = Router()
 @router.message(LoggedIn(), F.text.lower() == "🎫 билеты")
 async def ticket_type_view(message: types.Message):
     await message.bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.TYPING)
-    tickets = get_tickets_list(chat_id=message.chat.id)
+    tickets = get_tickets_list(chat_id=message.chat.id, order_id="*")
 
     if tickets:
         text, keyboard = inline_ticket_types()
@@ -27,9 +26,9 @@ async def ticket_type_view(message: types.Message):
 
 
 # Хендлер по выбору типа билета по inline кнопки +
-@router.callback_query(LoggedIn(), F.data.startswith("ticket_types"))
+@router.callback_query(LoggedIn(), F.data == "ticket_types")
 async def callback_ticket_type_view(callback: types.CallbackQuery):
-    tickets = get_tickets_list(chat_id=callback.message.chat.id)
+    tickets = get_tickets_list(chat_id=callback.message.chat.id, order_id="*")
 
     if tickets:
         text, keyboard = inline_ticket_types()
@@ -43,9 +42,9 @@ async def callback_ticket_type_view(callback: types.CallbackQuery):
 # Хендлер по выводу списка билетов +
 @router.callback_query(LoggedIn(), F.data.startswith("tickets_"))
 async def callback_ticket_list_view(callback: types.CallbackQuery):
-    tickets = get_tickets_list(chat_id=callback.message.chat.id)
     ticket_type = callback.data.split("_")[1]
     order_id = callback.data.split("_")[2]
+    tickets = get_tickets_list(chat_id=callback.message.chat.id, order_id=order_id)
 
     text, keyboard = inline_tickets_list(tickets=tickets, ticket_type=ticket_type, order_id=order_id)
     await callback.message.edit_text(text=text, reply_markup=keyboard)
@@ -71,10 +70,10 @@ async def callback_ticket_details_view(callback: types.CallbackQuery, callback_d
 @router.callback_query(LoggedIn(), F.data.startswith("ticket_print_"))
 async def callback_ticket_print_view(callback: types.CallbackQuery):
     ticket_id = callback.data.split('_')[2]
-    url = f"https://master.apiv2.pir.ru/api/v1/ticket/{ticket_id}/print?pdf"
+    url = get_ticket_details(ticket_id=ticket_id)["pdf_url"]
 
     async with aiohttp.ClientSession() as session:
-        async with session.get(url, auth=aiohttp.BasicAuth(login, password)) as response:
+        async with session.get(url) as response:
             if response.status == 200:
                 result = await response.read()
                 await callback.message.bot.send_chat_action(chat_id=callback.message.chat.id,

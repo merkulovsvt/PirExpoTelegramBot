@@ -3,14 +3,17 @@ import requests
 from bot.utils.config import token
 
 
-def get_orders_list(chat_id: int) -> dict:
-    url = "https://master.apiv2.pir.ru/tgbot/order/list"
-    params = {"chat_id": chat_id, "api_key": token}
+def get_events_list(chat_id="*") -> dict:
+    url = "https://master.apiv2.pir.ru/tgbot/event/list"
+    params = {"api_key": token}
 
-    orders_list = requests.get(url, params=params)
-    return orders_list.json()
+    if chat_id != "*":
+        params["chat_id"] = chat_id
 
-490082094
+    events_list = requests.get(url, params=params)
+    return events_list.json()
+
+
 def get_order_details(order_id: str) -> dict:
     url = f"https://master.apiv2.pir.ru/tgbot/order/{order_id}"
     params = {"api_key": token}

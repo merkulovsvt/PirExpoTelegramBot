@@ -23,7 +23,7 @@ def reply_get_phone_number() -> (str, ReplyKeyboardBuilder):
 
 
 # Reply клавиатура для основного меню +
-def reply_main_menu(phone_number="*") -> (str, ReplyKeyboardBuilder):
+def reply_main_menu(phone=None) -> (str, ReplyKeyboardBuilder):
     builder = ReplyKeyboardBuilder()
     buttons = ("🛒 Заказы", "🎫 Билеты", "🗓️ Расписание", "🎉 Мероприятия", "🤝 Экспоненты")
 
@@ -31,8 +31,9 @@ def reply_main_menu(phone_number="*") -> (str, ReplyKeyboardBuilder):
         builder.add(KeyboardButton(text=elem))
     builder.adjust(1, 2, 2)
 
-    if phone_number == "*":
-        text = f"Вы уже вошли в систему!"
+    if phone:
+        text = f"Вы успешно зарегистрировались по номеру {phone}!"
     else:
-        text = f"Вы успешно зарегистрировались по номеру {phone_number}!"
+        text = f"Вы уже вошли в систему!"
+
     return text, builder.as_markup(resize_keyboard=True)

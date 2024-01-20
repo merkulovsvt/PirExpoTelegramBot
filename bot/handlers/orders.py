@@ -52,7 +52,7 @@ async def callback_order_details_view(callback: types.CallbackQuery, callback_da
 async def callback_order_invoice_send(callback: types.CallbackQuery):
     order_id = callback.data.split("_")[2]
     order_details = get_order_details(order_id=order_id)
-    pdf_url = order_details["invoice_url"]
+    pdf_url = order_details["invoice_pdf_url"]
 
     if pdf_url:
         await callback.message.bot.send_chat_action(chat_id=callback.message.chat.id, action=ChatAction.UPLOAD_DOCUMENT)

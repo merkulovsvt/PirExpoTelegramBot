@@ -1,35 +1,22 @@
-import json
-import os
-
 import requests
-from requests.auth import HTTPBasicAuth
 
-from bot.utils.config import login, password
+from bot.utils.config import token
 
 
-def get_tickets_list(chat_id: int, *order_id) -> dict:
-    # url = "https://master.apiv2.pir.ru/api/v1/order/list"
-    # params = {"chat_id": chat_id}
-    #
-    # if order_id:
-    #     params["order_id"] = order_id
-    #
-    # tickets_list = requests.get(url, auth=HTTPBasicAuth(login, password), params=params)
-    # return tickets_list.json()
+def get_tickets_list(chat_id: int, order_id: str) -> dict:
+    url = "https://master.apiv2.pir.ru/tgbot/ticket/list"
+    params = {"chat_id": chat_id, "api_key": token}
 
-    json_path = os.path.join(os.getcwd(), 'static', 'tickets.json')
-    with open(json_path, "r", encoding="utf-8") as json_file:
-        data = json.load(json_file)
-        return data
+    if order_id != "*":
+        params["order_id"] = order_id
+
+    tickets_list = requests.get(url, params=params)
+    return tickets_list.json()
 
 
 def get_ticket_details(ticket_id: str) -> dict:
-    # url = "https://master.apiv2.pir.ru/api/v1/order/list"
-    # params = {"ticket_id": ticket_id}
-    #
-    # tickets_list = requests.get(url, auth=HTTPBasicAuth(login, password), params=params)
-    # return tickets_list.json()
-    json_path = os.path.join(os.getcwd(), 'static', 'ticket_details.json')
-    with open(json_path, "r", encoding="utf-8") as json_file:
-        data = json.load(json_file)
-        return data
+    url = f"https://master.apiv2.pir.ru/tgbot/ticket/{ticket_id}"
+    params = {"ticket_id": ticket_id, "api_key": token}
+
+    tickets_list = requests.get(url, params=params)
+    return tickets_list.json()

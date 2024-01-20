@@ -1,23 +1,19 @@
-import json
-import os
+import requests
+
+from bot.utils.config import token
 
 
-async def put_user_data(chat_id: int, state: str, phone_number=None) -> None:
-    # url = "https://master.apiv2.pir.ru/api/v1/order/list"
-    # params = {"chat_id": chat_id, "phone_number": phone_number, "state": state}
-    #
-    # requests.post(url, auth=HTTPBasicAuth(login, password), params=params)
-    zaza = 1
+async def post_user_data(chat_id: int, phone: str) -> None:
+    url = "https://master.apiv2.pir.ru/tgbot/user/register"
+    data = {"chat_id": chat_id, "phone": phone}
+    params = {"api_key": token}
+
+    requests.post(url, data=data, params=params)
 
 
 def get_user_data(chat_id: int) -> dict:
-    # url = "https://master.apiv2.pir.ru/api/v1/order/list"
-    # params = {"chat_id ": chat_id}
-    #
-    # tickets_list = requests.get(url, auth=HTTPBasicAuth(login, password), params=params)
-    # return tickets_list.json()
+    url = "https://master.apiv2.pir.ru/tgbot/user/me"
+    params = {"chat_id": chat_id, "api_key": token}
 
-    json_path = os.path.join(os.getcwd(), 'static', 'user_data.json')
-    with open(json_path, "r", encoding="utf-8") as json_file:
-        data = json.load(json_file)
-        return data
+    user_data = requests.get(url, params=params)
+    return user_data.json()

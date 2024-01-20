@@ -13,21 +13,20 @@ class LoggedIn(Filter):
             return True
         else:
             user_data = get_user_data(message.chat.id)
-            if user_data["state"] == "User:logged_in" and user_data["phone_number"]:
+            if user_data.get("detail"):
+                return False
+            else:
                 await state.set_state(User.logged_in)
                 return True
-            else:
-                return False
 
 
 class LoggedOut(Filter):
     async def __call__(self, message: Message, state: FSMContext) -> bool:
-        print(1)
         if await state.get_state() == "User:logged_out":
             return True
         else:
             user_data = get_user_data(message.chat.id)
-            if user_data["state"] == "User:logged_out":
+            if user_data.get("detail"):
                 await state.set_state(User.logged_out)
                 return True
             else:

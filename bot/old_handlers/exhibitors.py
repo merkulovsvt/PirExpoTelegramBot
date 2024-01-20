@@ -6,13 +6,14 @@ from bot.data.func_exhibitors import load_exhibitors
 from bot.keyboards.exhibitors_boards import (inline_exhibitors_search_menu,
                                              reply_stop_exhibitors_search)
 from bot.keyboards.user_boards import reply_main_menu
+from bot.utils.filters import LoggedIn
 from bot.utils.states import Exhibitors, User
 
 router = Router()
 
 
 # Хендлер по меню поиска экспонентов +
-@router.message(User.logged_in, F.text.lower() == "🤝 экспоненты")
+@router.message(LoggedIn(), F.text.lower() == "🤝 экспоненты")
 async def exhibitor_menu_view(message: types.Message, state: FSMContext):
     user_data = await state.get_data()
     exhibitors = user_data.get("exhibitors")
@@ -64,8 +65,6 @@ async def callback_order_detail_view(message: types.Message, state: FSMContext):
 async def callback_order_detail_view(message: types.Message, state: FSMContext):
     user_data = await state.get_data()
     exhibitors = user_data.get("exhibitors")
-
-    text = ""
 
     for exhibitor_id in exhibitors:
         if exhibitors[exhibitor_id]["name"].lower() == message.text.lower():
