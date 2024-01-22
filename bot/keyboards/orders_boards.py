@@ -11,11 +11,15 @@ def inline_orders_list(orders: dict) -> (str, InlineKeyboardMarkup):
     builder = InlineKeyboardBuilder()
     text = "Ваши заказы:"
 
+    orders_list = []
     for order in orders:
-        button_text = (f"Заказ №{order['id']} от {datetime.fromisoformat(order['date']).strftime('%d.%m.%Y')} "
-                       f"на сумму {order['sum']}")
-        builder.button(text=button_text if order['status'] == 3 else "Ожидает оплаты " + button_text,
-                       callback_data=OrderInfo(order_id=str(order['id'])))
+        if order["status"] == 3:
+            date = datetime.fromisoformat(order['date']).strftime('%d.%m.%Y')
+            orders_list.append((date, order["id"], order["sum"]))
+
+    for order in sorted(orders_list):
+        button_text = f"Заказ №{order[1]} от {order[0]} на сумму {order[2]}"
+        builder.button(text=button_text, callback_data=OrderInfo(order_id=str(order[1])))
 
     builder.adjust(1, repeat=True)
     return text, builder.as_markup()
@@ -37,10 +41,5 @@ def inline_order_details(order_id: str, order_details: dict) -> (str, InlineKeyb
         else:
             builder.button(text="🛒 Вернутся к заказам", callback_data="orders")
             builder.adjust(1, repeat=True)
-
-    elif order_details["status"] == 2:
-        builder.button(text="Оплатить заказ", url="zaza.com")  # Доделать
-        builder.button(text="🛒 Вернутся к заказам", callback_data="orders")
-        builder.adjust(1, repeat=True)
 
     return text, builder.as_markup()

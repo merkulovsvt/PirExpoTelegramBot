@@ -10,7 +10,7 @@ def get_orders_list(chat_id: int) -> dict:
     orders_list = requests.get(url, params=params)
     return orders_list.json()
 
-490082094
+
 def get_order_details(order_id: str) -> dict:
     url = f"https://master.apiv2.pir.ru/tgbot/order/{order_id}"
     params = {"api_key": token}
