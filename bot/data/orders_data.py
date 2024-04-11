@@ -17,3 +17,10 @@ def get_order_details(order_id: str) -> dict:
 
     order_details = requests.get(url, params=params)
     return order_details.json()
+
+
+def tickets_status_check(order: dict) -> bool:
+    for ticket in order["tickets"]:
+        if ticket["status"] == "2":
+            return True
+    return False

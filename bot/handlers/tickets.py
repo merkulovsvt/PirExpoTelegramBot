@@ -2,7 +2,7 @@ import aiohttp
 from aiogram import F, Router, types
 from aiogram.enums import ChatAction
 
-from bot.data.tickets_data import get_ticket_details, get_tickets_list
+from bot.data.tickets_data import get_ticket_details, get_tickets_list, tickets_status_check
 from bot.keyboards.tickets_boards import (inline_ticket_details,
                                           inline_ticket_types,
                                           inline_tickets_list)
@@ -18,7 +18,7 @@ async def ticket_type_view(message: types.Message):
     await message.bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.TYPING)
     tickets = get_tickets_list(chat_id=message.chat.id, order_id="*")
 
-    if tickets:
+    if tickets and tickets_status_check(tickets=tickets):
         text, keyboard = inline_ticket_types()
         await message.answer(text=text, reply_markup=keyboard)
     else:
@@ -30,7 +30,7 @@ async def ticket_type_view(message: types.Message):
 async def callback_ticket_type_view(callback: types.CallbackQuery):
     tickets = get_tickets_list(chat_id=callback.message.chat.id, order_id="*")
 
-    if tickets:
+    if tickets and tickets_status_check(tickets=tickets):
         text, keyboard = inline_ticket_types()
         await callback.message.edit_text(text=text, reply_markup=keyboard)
     else:
@@ -66,7 +66,7 @@ async def callback_ticket_details_view(callback: types.CallbackQuery, callback_d
     await callback.answer()
 
 
-# Хендлер по отправке pdf билета +
+# Хендлер по отправке pdf билета по id +
 @router.callback_query(LoggedIn(), F.data.startswith("ticket_print_"))
 async def callback_ticket_print_view(callback: types.CallbackQuery):
     ticket_id = callback.data.split('_')[2]

@@ -3,23 +3,28 @@ from datetime import datetime
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
+from bot.data.orders_data import tickets_status_check
 from bot.utils.callbackdata import OrderInfo
 
 
 # Inline клавиатура для вывода списка заказов +
 def inline_orders_list(orders: dict) -> (str, InlineKeyboardMarkup):
     builder = InlineKeyboardBuilder()
-    text = "Ваши заказы:"
 
     orders_list = []
     for order in orders:
-        if order["status"] == 3:
+        if order["status"] == 3 and tickets_status_check(order=order):
             date = datetime.fromisoformat(order['date']).strftime('%d.%m.%Y')
             orders_list.append((date, order["id"], order["sum"]))
 
-    for order in sorted(orders_list):
-        button_text = f"Заказ №{order[1]} от {order[0]} на сумму {order[2]}"
-        builder.button(text=button_text, callback_data=OrderInfo(order_id=str(order[1])))
+    if orders_list:
+        text = "Ваши заказы:"
+
+        for order in sorted(orders_list):
+            button_text = f"Заказ №{order[1]} от {order[0]} на сумму {order[2]}"
+            builder.button(text=button_text, callback_data=OrderInfo(order_id=str(order[1])))
+    else:
+        text = "К сожалению, у вас нет заказов"
 
     builder.adjust(1, repeat=True)
     return text, builder.as_markup()

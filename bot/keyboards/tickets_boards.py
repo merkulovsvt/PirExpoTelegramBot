@@ -38,7 +38,7 @@ def inline_tickets_list(tickets: dict, ticket_type: str, order_id: str):
 
     for ticket in tickets:
         if ticket["ticket_type"]["is_event"]:
-            button_text = f"Билет №{ticket['id']} на мероприятие {ticket['ticket_type']['name']}"
+            button_text = f"Билет №{ticket['id']} на мероприятие \"{ticket['ticket_type']['name']}\""
         else:
             button_text = f"Входной билет №{ticket['id']}"
             # button_text = f"Входной билет №{ticket['id']} на {tickets[ticket_id]['ticket_owner_name']}"
@@ -75,7 +75,7 @@ def inline_ticket_details(ticket_details: dict, order_id: str, ticket_id: str, t
 
     # elif ticket_type == "event":
     else:
-        text = f"Билет №{ticket_id} на мероприятие {ticket_details['event_name']}"
+        text = f"Билет №{ticket_id} на мероприятие {ticket_details['ticket_type']['name']}"
         builder.button(text="Информация о мероприятии", callback_data="event")  # Доделать
 
     if order_id != "*":

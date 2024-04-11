@@ -43,7 +43,7 @@ async def callback_exhibitors_search_type(callback: types.CallbackQuery, state: 
 
     if search_type == "letter":
         letters = get_exhibitors_letters()
-        text, keyboard = inline_exhibitors_letter_search(letters=letters["alfabet"])
+        text, keyboard = inline_exhibitors_letter_search(letters=letters["alphabet"])
         await callback.message.edit_text(text=text, reply_markup=keyboard)
 
     elif search_type == "name":
@@ -105,54 +105,3 @@ async def callback_exhibitor_details(callback: types.CallbackQuery, callback_dat
 @router.callback_query(F.data == "inactive")
 async def callback_inactive(callback: types.CallbackQuery):
     await callback.answer()
-
-#
-#
-# # Хендлер по выходу из поиска через inline кнопку ~
-# @router.callback_query(F.data == "stop_search_exhibitor")
-# async def callback_exhibitors_stop_search(callback: types.CallbackQuery, state: FSMContext):
-#     await state.set_state(User.logged_in)
-#
-#     text, keyboard = reply_main_menu()
-#     await callback.message.answer(text="Вы вернулись в главное меню.", reply_markup=keyboard)
-#     await callback.answer()
-#
-#
-# # Хендлер по выходу из поиска через reply кнопку
-# @router.message(Exhibitors.searching, F.text.lower() == "отменить поиск")
-# async def exhibitors_stop_search(message: types.Message, state: FSMContext):
-#     await state.set_state(User.logged_in)
-#
-#     text, keyboard = reply_main_menu()
-#     await message.answer(text="Вы вернулись в главное меню.", reply_markup=keyboard)
-#
-#
-# # Хендлер по выводу списка найденных компаний
-# @router.message(Exhibitors.searching, F.text.lower() != "отменить поиск")
-# async def exhibitors_list_view(message: types.Message, state: FSMContext):
-#     exhibitors = get_exhibitors_list(message.text)
-#
-#     if exhibitors:
-#         text, keyboard = inline_exhibitors_list(exhibitors)
-#     else:
-#         await state.set_state(Exhibitors.searching)
-#         await message.answer(text="По вашему запросу не было найдено ни одной компании")
-#         text, keyboard = reply_stop_exhibitors_search()
-#
-#     await message.answer(text=text, reply_markup=keyboard)
-
-# for exhibitor in exhibitors:
-#
-#     if exhibitors[exhibitor_id]["name"].lower() == message.text.lower():
-#         location_text = ''
-#         for booth_id in exhibitors[exhibitor_id]["booth_data"]:
-#             hall_num, place_name = str(exhibitors[exhibitor_id]["booth_data"][booth_id]["hall_number"]), str(
-#                 exhibitors[exhibitor_id]["booth_data"][booth_id]["booth_number"])
-#             location_text += 'Зал ' + hall_num + ' cтенд №' + place_name
-#         text = "Компания " + exhibitors[exhibitor_id]["name"] + "\nОписание: " + exhibitors[exhibitor_id][
-#             "description"] + "\nНаходится в " + location_text
-#         a, keyboard = inline_exhibitors_search_menu(False)
-#         await message.answer(text=text, reply_markup=keyboard, parse_mode="")
-#         break
-# else:
-#     text = "Неверное название компании.\nПопробуйте снова"

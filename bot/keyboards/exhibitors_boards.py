@@ -19,7 +19,7 @@ def inline_exhibitors_menu():
     return text, builder.as_markup()
 
 
-# Inline клавиатура для типа поиска экспонентов +
+# Inline клавиатура для выбора типа поиска экспонентов +
 def inline_exhibitors_search_types():
     builder = InlineKeyboardBuilder()
     text = "Выберите тип поиска:"
@@ -47,7 +47,7 @@ def inline_exhibitors_letter_search(letters: list):
     return text, builder.as_markup()
 
 
-# Inline клавиатура для подтверждения поиска по названию
+# Inline клавиатура для поиска по названию
 def inline_exhibitors_name_search(user_input: str):
     builder = InlineKeyboardBuilder()
     text = f"Ваш запрос: {user_input}"
@@ -114,6 +114,7 @@ def inline_exhibitors_list(exhibitors: list, prev_callback_data: dict, list_type
     return text, builder.as_markup()
 
 
+# Inline клавиатура для вывода данных экспонента
 def inline_exhibitors_details(exhibitor_details: dict, exhibitors_list_data: dict):
     builder = InlineKeyboardBuilder()
 
@@ -122,13 +123,12 @@ def inline_exhibitors_details(exhibitor_details: dict, exhibitors_list_data: dic
     page = exhibitors_list_data["page"]
     user_input = exhibitors_list_data["user_input"]
 
-    # text = f"Компания {exhibitor_details['name']}"
-    text = (f"Компания {exhibitor_details['name']}"  # TODO дописать текст
-            f"{exhibitor_details['description']}"
-            f"Телефон: {exhibitor_details['phone']}"
-            f"Почта: {exhibitor_details['email']}"
-            f"Сайт: {exhibitor_details['website']}"
-            f"Расположение ")
+    text = (f"Компания {exhibitor_details['name']}\n"  # TODO дописать текст
+            f"{exhibitor_details['description']}\n"
+            f"Телефон: {exhibitor_details['phone']}\n"
+            f"Почта: {exhibitor_details['email']}\n"
+            f"Сайт: {exhibitor_details['website']}\n"
+            f"Расположение \n")
     builder.button(text="Вернуться к списку экспонентов",
                    callback_data=ExhibitorSearchInfo(full=full, letter=letter, page=page, user_input=user_input))
     return text, builder.as_markup()

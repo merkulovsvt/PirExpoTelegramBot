@@ -21,7 +21,7 @@ def get_exhibitors_list(full=None, letter=None, user_input=None):
     if full:
         pass
     elif letter:
-        params["alfabet"] = letter
+        params["alphabet"] = letter
     elif user_input:
         params["name"] = user_input
 
