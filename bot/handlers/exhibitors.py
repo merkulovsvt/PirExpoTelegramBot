@@ -1,12 +1,17 @@
 from aiogram import F, Router, types
+from aiogram.enums import ParseMode
 from aiogram.fsm.context import FSMContext
 
-from bot.data.exhibitors_data import get_exhibitors_list, get_exhibitors_letters, get_exhibitor_details
-from bot.keyboards.exhibitors_boards import (inline_exhibitors_menu,
-                                             inline_exhibitors_search_types, inline_exhibitors_letter_search,
-                                             inline_exhibitors_list, inline_exhibitors_name_search,
-                                             inline_exhibitors_details)
-from bot.utils.callbackdata import ExhibitorSearchInfo, ExhibitorInfo
+from bot.data.exhibitors_data import (get_exhibitor_details,
+                                      get_exhibitors_letters,
+                                      get_exhibitors_list)
+from bot.keyboards.exhibitors_boards import (inline_exhibitors_details,
+                                             inline_exhibitors_letter_search,
+                                             inline_exhibitors_list,
+                                             inline_exhibitors_menu,
+                                             inline_exhibitors_name_search,
+                                             inline_exhibitors_search_types)
+from bot.utils.callbackdata import ExhibitorInfo, ExhibitorSearchInfo
 from bot.utils.filters import LoggedIn
 from bot.utils.states import Exhibitors
 

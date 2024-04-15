@@ -1,8 +1,10 @@
 import aiohttp
 from aiogram import F, Router, types
-from aiogram.enums import ChatAction
+from aiogram.enums import ChatAction, ParseMode
 
-from bot.data.tickets_data import get_ticket_details, get_tickets_list, tickets_status_check
+from bot.data.events_data import get_event_data
+from bot.data.tickets_data import (get_ticket_details, get_tickets_list,
+                                   tickets_status_check)
 from bot.keyboards.tickets_boards import (inline_ticket_details,
                                           inline_ticket_types,
                                           inline_tickets_list)
@@ -58,11 +60,15 @@ async def callback_ticket_details_view(callback: types.CallbackQuery, callback_d
     ticket_id = callback_data.ticket_id
     ticket_type = callback_data.ticket_type
 
-    ticket_details = get_ticket_details(ticket_id=ticket_id)
-    text, keyboard = inline_ticket_details(ticket_details=ticket_details, order_id=order_id,
+    event_data = {}
+    if ticket_type == 'event':
+        event_id = get_ticket_details(ticket_id=ticket_id).get('ticket_type').get("event_id")
+        event_data = get_event_data(event_id=event_id)
+
+    text, keyboard = inline_ticket_details(event_data=event_data, order_id=order_id,
                                            ticket_id=ticket_id, ticket_type=ticket_type)
 
-    await callback.message.edit_text(text, reply_markup=keyboard)
+    await callback.message.edit_text(text, reply_markup=keyboard, parse_mode=ParseMode.HTML)
     await callback.answer()
 
 
@@ -80,7 +86,7 @@ async def callback_ticket_print_view(callback: types.CallbackQuery):
                                                             action=ChatAction.UPLOAD_DOCUMENT)
 
                 await callback.bot.send_document(callback.message.chat.id, document=types.BufferedInputFile(
-                    file=result, filename=f'Билет #{ticket_id}.pdf'), caption=f"Билет #{ticket_id}")
+                    file=result, filename=f'Входной билет #{ticket_id}.pdf'), caption=f"Входной билет #{ticket_id}")
             else:
                 await callback.message.answer(text=f"К сожалению, не можем прислать билет №{ticket_id}")
 

@@ -11,12 +11,6 @@ class TicketInfo(CallbackData, prefix="ticket"):
     ticket_type: str
 
 
-class EventInfo(CallbackData, prefix="event"):
-    event_id: str
-    theme_id: str
-    ticket_type: str
-
-
 class ExhibitorSearchInfo(CallbackData, prefix="exhibitor_search"):
     full: bool
     letter: str

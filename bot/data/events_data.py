@@ -3,7 +3,7 @@ import requests
 from bot.utils.config import token
 
 
-def get_events_list(chat_id=None, date=None) -> dict:
+def get_events_list(chat_id=None, date=None, theme_id=None) -> dict:
     url = "https://master.apiv2.pir.ru/tgbot/event/list"
     params = {"api_key": token}
 
@@ -12,6 +12,9 @@ def get_events_list(chat_id=None, date=None) -> dict:
 
     if date:
         params["date"] = date
+
+    if theme_id:
+        params["theme"] = theme_id
 
     events_list = requests.get(url, params=params)
 
@@ -32,9 +35,13 @@ def get_event_themes(chat_id=None) -> dict:
     return events_list.json()
 
 
-def get_order_details(order_id: str) -> dict:
-    url = f"https://master.apiv2.pir.ru/tgbot/order/{order_id}"
-    params = {"api_key": token}
+def get_event_data(event_id: str):
+    url = f"https://master.apiv2.pir.ru/tgbot/event/{event_id}"
+    params = {"api_key": token, 'id': event_id}
 
-    order_details = requests.get(url, params=params)
-    return order_details.json()
+    event_data = requests.get(url, params=params)
+
+    if event_data.status_code == 200:
+        return event_data.json()
+    else:
+        return {}

@@ -1,10 +1,14 @@
 import aiohttp
 from aiogram import F, Router, types
-from aiogram.enums import ChatAction
+from aiogram.enums import ChatAction, ParseMode
 
-from bot.data.events_data import get_events_list, get_event_themes
+from bot.data.events_data import (get_event_data, get_event_themes,
+                                  get_events_list)
 from bot.data.tickets_data import get_ticket_list_by_event
-from bot.keyboards.events_boards import inline_event_categories, inline_events_themes, inline_events_list
+from bot.keyboards.events_boards import (inline_event_categories,
+                                         inline_events_details,
+                                         inline_events_list,
+                                         inline_events_themes)
 from bot.utils.filters import LoggedIn
 
 router = Router()
@@ -25,9 +29,9 @@ async def callback_events_type_view(callback: types.CallbackQuery):
 
 
 # Хендлер по выбору темы мероприятия
-@router.callback_query(LoggedIn(), F.data.startswith("event_themes_"))
+@router.callback_query(LoggedIn(), F.data.startswith("themes_"))
 async def callback_events_theme_view(callback: types.CallbackQuery):
-    events_type = callback.data.split("_")[2]
+    events_type = callback.data.split("_")[1]
 
     if events_type == "my":
         event_themes = get_event_themes(chat_id=callback.message.chat.id)
@@ -38,50 +42,26 @@ async def callback_events_theme_view(callback: types.CallbackQuery):
     await callback.message.edit_text(text=text, reply_markup=keyboard)
 
 
-# Хендлер по выводу тематики мероприятия
-@router.callback_query(LoggedIn(), F.data.startswith("events_"))
-async def callback_events_thematics_view(callback: types.CallbackQuery):
-    events_type = callback.data.split("_")[1]
-    theme_id = callback.data.split("_")[2]
-
-    if events_type == "my":
-        events = get_events_list(chat_id=callback.message.chat.id)
-    else:
-        events = get_events_list()
-
-    text, keyboard = inline_events_list(events=events, events_type=events_type, theme_id=theme_id)
-    await callback.message.edit_text(text=text, reply_markup=keyboard)
-
-
 # Хендлер по выводу списка мероприятия
 @router.callback_query(LoggedIn(), F.data.startswith("events_"))
 async def callback_events_list_view(callback: types.CallbackQuery):
-    events_type = callback.data.split("_")[1]
-    theme_id = callback.data.split("_")[2]
+    theme_id = callback.data.split("_")[1]
+    events = get_events_list(chat_id=callback.message.chat.id, theme_id=theme_id)
 
-    if events_type == "my":
-        events = get_events_list(chat_id=callback.message.chat.id)
-    else:
-        events = get_events_list()
-
-    text, keyboard = inline_events_list(events=events, events_type=events_type, theme_id=theme_id)
+    text, keyboard = inline_events_list(events=events, theme_id=theme_id)
     await callback.message.edit_text(text=text, reply_markup=keyboard)
+
 
 # Хендлер по выводу деталей мероприятия
-@router.callback_query(LoggedIn(), F.data.startswith("events_"))
+@router.callback_query(LoggedIn(), F.data.startswith("event_"))
 async def callback_events_details_view(callback: types.CallbackQuery):
-    events_type = callback.data.split("_")[1]
-    theme_id = callback.data.split("_")[2]
+    theme_id = callback.data.split("_")[1]
+    event_id = callback.data.split("_")[2]
 
-    if events_type == "my":
-        events = get_events_list(chat_id=callback.message.chat.id)
-    else:
-        events = get_events_list()
+    event_data = get_event_data(event_id=event_id)
 
-    text, keyboard = inline_events_list(events=events, events_type=events_type, theme_id=theme_id)
-    await callback.message.edit_text(text=text, reply_markup=keyboard)
-
-
+    text, keyboard = inline_events_details(event_data=event_data, theme_id=theme_id)
+    await callback.message.edit_text(text=text, reply_markup=keyboard, parse_mode=ParseMode.HTML)
 
 
 # Хендлер по отправке pdf билета по ticket_type +

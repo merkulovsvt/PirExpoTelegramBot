@@ -20,7 +20,7 @@ def inline_orders_list(orders: dict) -> (str, InlineKeyboardMarkup):
     if orders_list:
         text = "Ваши заказы:"
 
-        for order in sorted(orders_list):
+        for order in sorted(orders_list, key=lambda x: x[0]):
             button_text = f"Заказ №{order[1]} от {order[0]} на сумму {order[2]}"
             builder.button(text=button_text, callback_data=OrderInfo(order_id=str(order[1])))
     else:

@@ -1,8 +1,11 @@
 from aiogram import F, Router, types
 
-from bot.data.partners_data import get_partners_list, get_partner_details, get_themes_list
-from bot.keyboards.partners_boards import inline_partners_themes, inline_partner_type_list, inline_partners_list, \
-    inline_partner_details
+from bot.data.partners_data import (get_partner_details, get_partners_list,
+                                    get_themes_list)
+from bot.keyboards.partners_boards import (inline_partner_details,
+                                           inline_partner_type_list,
+                                           inline_partners_list,
+                                           inline_partners_themes)
 from bot.utils.filters import LoggedIn
 
 router = Router()

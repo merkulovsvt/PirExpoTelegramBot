@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 
@@ -6,8 +8,8 @@ def inline_event_categories():
     builder = InlineKeyboardBuilder()
     text = "Выберите категорию:"
 
-    builder.button(text="Мои мероприятия", callback_data="event_themes_my")
-    builder.button(text="Все мероприятия", callback_data="event_themes_all")
+    builder.button(text="Мои мероприятия", callback_data="themes_my")
+    builder.button(text="Все мероприятия", callback_data="themes_*")
     return text, builder.as_markup()
 
 
@@ -20,81 +22,80 @@ def inline_events_themes(event_themes: dict, events_type: str):
         themes_set.add((theme['name'], theme['id']))
 
     if len(themes_set) == 0:
-        text = "К сожалению, у вас нет приобретенных мероприятий."
+        if events_type == "my":
+            text = "К сожалению, у вас нет приобретенных мероприятий."
+        else:
+            text = "К сожалению, не можем вывести список тем."
 
     else:
         text = "Темы мероприятий:"
         for theme in sorted(themes_set):
             button_text = f"{theme[0]}"
-            builder.button(text=button_text, callback_data=f"events_{events_type}_{theme[1]}")
+            if events_type == "my":
+                builder.button(text=button_text, callback_data=f"events_{theme[1]}")
+            else:
+                builder.button(text=button_text, url=f'https://pirexpo.com/program/schedule?theme={theme[1]}')
 
-    builder.button(text="Вернуться к выбору категории мероприятий", callback_data="event_categories")
+    builder.button(text="🎉 Вернуться к выбору категории мероприятий", callback_data="event_categories")
 
     builder.adjust(1)
-    return text, builder.as_markup()
-
-
-# Inline клавиатура для выбора площадки мероприятия
-def inline_events_areas(events: dict, events_type: str, theme_id: str):
-    builder = InlineKeyboardBuilder()
-    text = f"Мероприятия тематики {theme_id}"
-
-    for event in events:
-        if event['theme']['id'] == int(theme_id):
-            button_text = f"{event['name']}"
-            builder.button(text=button_text, callback_data=f"zaza")
-
-    builder.button(text="Вернуться к выбору темы мероприятий", callback_data=f"event_themes_{events_type}")
-
-    builder.adjust(1, repeat=True)
     return text, builder.as_markup()
 
 
 # Inline клавиатура для вывода списка мероприятий
-def inline_events_list(events: dict, events_type: str, theme_id: str):
+def inline_events_list(events: dict, theme_id: str):
     builder = InlineKeyboardBuilder()
-    text = f"Мероприятия тематики {theme_id}"
 
+    text = f"Мероприятия {events[0]['theme']['name']}"
+
+    event_list = []
+    min_name_len = float("inf")
     for event in events:
-        if event['theme']['id'] == int(theme_id):
-            print(event["thematics"])
-            button_text = f"{event['name']}"
-            builder.button(text=button_text, callback_data=f"zaza")
+        event_list.append((event.get('id'), event.get('name'), event.get("time_start"), event.get('time_finish')))
+        min_name_len = min(min_name_len, len(event['name']))
 
-    builder.button(text="Вернуться к выбору темы мероприятий", callback_data=f"event_themes_{events_type}")
+    for id, name, time_start, time_finish in sorted(event_list, key=lambda x: x[2]):
+        date = datetime.fromisoformat(time_start).strftime('%d.%m')
+        time_start = datetime.fromisoformat(time_start).strftime('%H:%M')
+        time_finish = datetime.fromisoformat(time_finish).strftime('%H:%M')
 
-    builder.adjust(1, repeat=True)
-    return text, builder.as_markup()
+        event_name = name if len(name) < 27 else name[:27] + '...'
+        # button_text = f"{date}: {time_start} - {time_finish} {event_name}"
+        if len(name) > min_name_len:
+            if len(name) - min_name_len >5:
+                name = name[:min_name_len+5] + '...'
+            else:
+                name += '...'
 
-def inline_events_details(event: dict, date: str):
-    builder = InlineKeyboardBuilder()
 
-    time_start = datetime.fromisoformat(event["time_start"]).strftime('%H:%M')
-    time_finish = datetime.fromisoformat(event["time_finish"]).strftime('%H:%M')
+        button_text = name
+        builder.button(text=button_text, callback_data=f"event_{theme_id}_{id}")
 
-    text = (f"<b>Дата:</b> <i>{datetime.fromisoformat(date).strftime('%d.%m.%Y')}</i>\n\n"
-            f"<b>Время:</b> <i>{time_start}</i> - <i>{time_finish}</i>\n\n"
-            f"<b>{event['type']['name']}</b>: \"{event.get('name')}\"\n\n"
-            f"<b>Место</b>: {event['place'].get('name') if event.get('place') else ''}")
-
-    builder.button(text="Скачать билет", callback_data=f"print_event_{event['ticket_type']['id']}")
-
+    builder.button(text="🎉 Вернуться к выбору темы мероприятий", callback_data=f"themes_my")
     builder.adjust(1)
     return text, builder.as_markup()
 
+# Inline клавиатура для вывода деталей мероприятий
+def inline_events_details(event_data: dict, theme_id: str):
+    builder = InlineKeyboardBuilder()
+    id = event_data.get('id')
+    name = event_data.get('name')
+    type_name = event_data.get('type').get('name')
+    ticket_type_id = event_data.get('ticket_type').get('id')
+    time_start = event_data.get("time_start")
+    time_finish = event_data.get('time_finish')
 
+    date = datetime.fromisoformat(time_start).strftime('%d.%m.%Y')
+    time_start = datetime.fromisoformat(time_start).strftime('%H:%M')
+    time_finish = datetime.fromisoformat(time_finish).strftime('%H:%M')
 
-# def inline_events_details(event_details: dict, events_type: str, theme_id: str):
-#     builder = InlineKeyboardBuilder()
-#     text = f"Мероприятия тематики {theme_id}"
-#
-#     for event in events:
-#         if event['theme']['id'] == int(theme_id):
-#             print(event["thematics"])
-#             button_text = f"{event['name']}"
-#             builder.button(text=button_text, callback_data=f"zaza")
-#
-#     builder.button(text="Вернуться к выбору темы мероприятий", callback_data=f"event_themes_{events_type}")
-#
-#     builder.adjust(1, repeat=True)
-#     return text, builder.as_markup()
+    text = (f"<b>Дата:</b> <i>{date}</i>\n\n"
+            f"<b>Время:</b> <i>{time_start}</i> - <i>{time_finish}</i>\n\n"
+            f"<b>{type_name}</b>: \"{name}\"\n\n"
+            f"<b>Место</b>: {event_data['place'].get('name') if event_data.get('place') else ''}")
+
+    builder.button(text="Скачать билет", callback_data=f"print_event_{ticket_type_id}")
+    builder.button(text="🎉 Вернуться к списку билетов", callback_data=f"events_{theme_id}")
+
+    builder.adjust(1)
+    return text, builder.as_markup()

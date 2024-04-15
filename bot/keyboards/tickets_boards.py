@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
@@ -63,25 +65,46 @@ def inline_tickets_list(tickets: dict, ticket_type: str, order_id: str):
 
 
 # Inline клавиатура для вывода деталей билета ~
-def inline_ticket_details(ticket_details: dict, order_id: str, ticket_id: str, ticket_type: str):
+def inline_ticket_details(event_data: dict, order_id: str, ticket_id: str, ticket_type: str):
     builder = InlineKeyboardBuilder()
 
-    builder.button(text="Скачать", callback_data=f"ticket_print_{ticket_id}")
-
     if ticket_type == "entry":
+        builder.button(text="Скачать", callback_data=f"ticket_print_{ticket_id}")
+
         # text = f"Входной билет №{ticket_id} на {ticket_details['ticket_owner_name']}"
         text = f"Входной билет №{ticket_id}"
         builder.button(text="Редактировать", url="zaza.com")  # Ждём ссылку от Леши
 
+        if order_id != "*":
+            ticket_type = "*"
+
+        builder.button(text="🎫 Вернуться к списку билетов", callback_data=f"tickets_{ticket_type}_{order_id}")
+        builder.adjust(2, 1, 1)
+
     # elif ticket_type == "event":
     else:
-        text = f"Билет №{ticket_id} на мероприятие {ticket_details['ticket_type']['name']}"
-        builder.button(text="Информация о мероприятии", callback_data="event")  # Доделать
+        name = event_data.get('name')
+        type_name = event_data.get('type').get('name')
+        ticket_type_id = event_data.get('ticket_type').get('id')
+        time_start = event_data.get("time_start")
+        time_finish = event_data.get('time_finish')
 
-    if order_id != "*":
-        ticket_type = "*"
+        date = datetime.fromisoformat(time_start).strftime('%d.%m.%Y')
+        time_start = datetime.fromisoformat(time_start).strftime('%H:%M')
+        time_finish = datetime.fromisoformat(time_finish).strftime('%H:%M')
 
-    builder.button(text="🎫 Вернуться к списку билетов", callback_data=f"tickets_{ticket_type}_{order_id}")
-    builder.adjust(2, 1, 1)
+        text = (f"<b>Дата:</b> <i>{date}</i>\n\n"
+                f"<b>Время:</b> <i>{time_start}</i> - <i>{time_finish}</i>\n\n"
+                f"<b>{type_name}</b>: \"{name}\"\n\n"
+                f"<b>Место</b>: {event_data['place'].get('name') if event_data.get('place') else ''}")
+
+        builder.button(text="Скачать билет", callback_data=f"print_event_{ticket_type_id}")
+        builder.adjust(1, 1)
+
+        if order_id != "*":
+            ticket_type = "*"
+
+        builder.button(text="🎫 Вернуться к списку билетов", callback_data=f"tickets_{ticket_type}_{order_id}")
+        builder.adjust(1, repeat=True)
 
     return text, builder.as_markup()

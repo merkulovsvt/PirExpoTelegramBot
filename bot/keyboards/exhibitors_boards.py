@@ -3,7 +3,7 @@ import math
 from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from bot.utils.callbackdata import ExhibitorSearchInfo, ExhibitorInfo
+from bot.utils.callbackdata import ExhibitorInfo, ExhibitorSearchInfo
 
 
 # Inline клавиатура для меню экспонентов +
@@ -117,18 +117,17 @@ def inline_exhibitors_list(exhibitors: list, prev_callback_data: dict, list_type
 # Inline клавиатура для вывода данных экспонента
 def inline_exhibitors_details(exhibitor_details: dict, exhibitors_list_data: dict):
     builder = InlineKeyboardBuilder()
-
+    # TODO дописать текст
     full = exhibitors_list_data["full"]
     letter = exhibitors_list_data["letter"]
     page = exhibitors_list_data["page"]
     user_input = exhibitors_list_data["user_input"]
-
-    text = (f"Компания {exhibitor_details['name']}\n"  # TODO дописать текст
+    text = (f"Компания {exhibitor_details['name']}\n" 
             f"{exhibitor_details['description']}\n"
             f"Телефон: {exhibitor_details['phone']}\n"
             f"Почта: {exhibitor_details['email']}\n"
             f"Сайт: {exhibitor_details['website']}\n"
-            f"Расположение \n")
+            f"Расположение {exhibitor_details['booths'][0]['booth_number']} Зал {exhibitor_details['booths'][0]['hall_number']}")
     builder.button(text="Вернуться к списку экспонентов",
                    callback_data=ExhibitorSearchInfo(full=full, letter=letter, page=page, user_input=user_input))
     return text, builder.as_markup()

@@ -1,8 +1,10 @@
 from aiogram import F, Router, types
 from aiogram.enums import ParseMode
 
-from bot.data.events_data import get_events_list
-from bot.keyboards.timetable_boards import inline_timetable_dates, inline_timetable_events_list
+from bot.data.events_data import get_event_data, get_events_list
+from bot.keyboards.timetable_boards import (inline_timetable_dates,
+                                            inline_timetable_events_details,
+                                            inline_timetable_events_list)
 from bot.utils.filters import LoggedIn
 
 router = Router()
@@ -27,23 +29,27 @@ async def callback_timetable_date_view(callback: types.CallbackQuery):
 
     if events:
         text, keyboard = inline_timetable_dates(events=events)
-        await callback.message.answer(text=text, reply_markup=keyboard)
+        await callback.message.edit_text(text=text, reply_markup=keyboard)
     else:
-        await callback.message.answer(text="К сожалению, у вас нет приобретенных мероприятий.")
+        await callback.message.edit_text(text="К сожалению, у вас нет приобретенных мероприятий.")
     await callback.answer()
 
 
-# Хендлер по выводу мероприятий в конкретный день
+# Хендлер по выводу списка мероприятия
 @router.callback_query(LoggedIn(), F.data.startswith("timetable_"))
 async def timetable_events_view(callback: types.CallbackQuery):
     date = callback.data.split("_")[1]
     events = get_events_list(chat_id=callback.message.chat.id, date=date)
 
-    events_list = []
-    for event in events:
-        events_list.append((event["time_start"], event))
+    text, keyboard = inline_timetable_events_list(events=events, date=date)
+    await callback.message.edit_text(text=text, reply_markup=keyboard)
 
-    for counter, event in enumerate(sorted(events_list)):
-        text, keyboard = inline_timetable_events_list(event=event[1], date=date)
-        await callback.message.answer(text=text, reply_markup=keyboard, parse_mode=ParseMode.HTML)
-    await callback.answer()
+
+# Хендлер по выводу деталей мероприятия
+@router.callback_query(LoggedIn(), F.data.startswith('time_event_'))
+async def timetable_events_data_view(callback: types.CallbackQuery):
+    event_id = callback.data.split("_")[2]
+    event_data = get_event_data(event_id=event_id)
+
+    text, keyboard = inline_timetable_events_details(event_data=event_data)
+    await callback.message.edit_text(text=text, reply_markup=keyboard, parse_mode=ParseMode.HTML)

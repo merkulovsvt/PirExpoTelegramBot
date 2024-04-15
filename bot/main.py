@@ -2,10 +2,10 @@ import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher
+from handlers import events, exhibitors, orders, partners, tickets, user
 
 from bot.handlers import timetable
 from bot.utils.config import set_commands, token
-from handlers import orders, tickets, user, events, exhibitors, partners
 
 
 async def main():
