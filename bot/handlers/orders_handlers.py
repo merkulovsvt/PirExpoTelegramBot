@@ -1,20 +1,21 @@
 from aiogram import F, Router, types
 from aiogram.enums import ChatAction
 
+from bot.callbacks.orders_callbacks import OrderDetails, InvoicePrint
 from bot.data.orders_data import get_order_details, get_orders_list
 from bot.keyboards.orders_boards import (inline_order_details,
                                          inline_orders_list)
-from bot.utils.callbackdata import OrderInfo
 from bot.utils.filters import LoggedIn
 
 router = Router()
 
 
-# Хендлер по выводу списка заказов по reply кнопке +
+# Хендлер по выводу списка заказов по reply кнопке
 @router.message(LoggedIn(), F.text.lower() == "🛒 заказы")
 async def orders_list_view(message: types.Message):
     await message.bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.TYPING)
-    orders = get_orders_list(chat_id=message.chat.id)
+
+    orders = await get_orders_list(chat_id=message.chat.id)
 
     if orders:
         text, keyboard = inline_orders_list(orders=orders)
@@ -23,10 +24,10 @@ async def orders_list_view(message: types.Message):
         await message.answer(text="К сожалению, у вас нет заказов")
 
 
-# Хендлер по выводу списка заказов по inline кнопке +
-@router.callback_query(LoggedIn(), F.data == "orders")
+# Хендлер по выводу списка заказов по inline кнопке
+@router.callback_query(LoggedIn(), F.data == "orders_list")
 async def callback_orders_list_view(callback: types.CallbackQuery):
-    orders = get_orders_list(chat_id=callback.message.chat.id)
+    orders = await get_orders_list(chat_id=callback.message.chat.id)
 
     if orders:
         text, keyboard = inline_orders_list(orders=orders)
@@ -36,22 +37,24 @@ async def callback_orders_list_view(callback: types.CallbackQuery):
     await callback.answer()
 
 
-# Хендлер по выводу деталей заказа +
-@router.callback_query(LoggedIn(), OrderInfo.filter())
-async def callback_order_details_view(callback: types.CallbackQuery, callback_data: OrderInfo):
+# Хендлер по выводу деталей заказа
+@router.callback_query(LoggedIn(), OrderDetails.filter())
+async def callback_order_details_view(callback: types.CallbackQuery, callback_data: OrderDetails):
     order_id = callback_data.order_id
-    order_details = get_order_details(order_id=order_id)
+
+    order_details = await get_order_details(order_id=order_id)
 
     text, keyboard = inline_order_details(order_id=order_id, order_details=order_details)
     await callback.message.edit_text(text=text, reply_markup=keyboard)
     await callback.answer()
 
 
-# Хендлер по отправке счета заказа +
-@router.callback_query(LoggedIn(), F.data.startswith("invoice_print_"))
-async def callback_order_invoice_send(callback: types.CallbackQuery):
-    order_id = callback.data.split("_")[2]
-    order_details = get_order_details(order_id=order_id)
+# Хендлер по отправке счета заказа
+@router.callback_query(LoggedIn(), InvoicePrint.filter())
+async def callback_order_invoice_send(callback: types.CallbackQuery, callback_data: InvoicePrint):
+    order_id = callback_data.order_id
+
+    order_details = await get_order_details(order_id=order_id)
     pdf_url = order_details["invoice_pdf_url"]
 
     if pdf_url:

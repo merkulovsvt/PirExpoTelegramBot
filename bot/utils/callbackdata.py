@@ -1,7 +1,7 @@
 from aiogram.filters.callback_data import CallbackData
 
 
-class OrderInfo(CallbackData, prefix="order"):
+class OrderInfo(CallbackData, prefix="get_order_info"):
     order_id: str
 
 
@@ -24,3 +24,12 @@ class ExhibitorInfo(CallbackData, prefix="exhibitor"):
     letter: str
     page: int
     user_input: str
+
+
+class PartnerTypes(CallbackData, prefix="get_partner_types_list"):
+    theme_id: int
+
+
+class PartnersList(CallbackData, prefix="get_partners_list"):
+    theme_id: str
+    type_id: str
