@@ -3,7 +3,8 @@ from aiogram.enums import ChatAction
 
 from bot.callbacks.timetable_callbacks import TimetableEventsList
 from bot.data.events_data import get_events_list
-from bot.keyboards.timetable_boards import inline_timetable_dates_list, inline_timetable_events_list
+from bot.keyboards.timetable_boards import (inline_timetable_dates_list,
+                                            inline_timetable_events_list)
 from bot.utils.filters import LoggedIn
 
 router = Router()

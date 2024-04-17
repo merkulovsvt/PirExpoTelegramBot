@@ -1,6 +1,7 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from bot.callbacks.partners_callbacks import PartnersTypes, PartnersList, PartnerDetails
+from bot.callbacks.partners_callbacks import (PartnerDetails, PartnersList,
+                                              PartnersTypes)
 
 
 # Inline клавиатура для вывода тем выставки

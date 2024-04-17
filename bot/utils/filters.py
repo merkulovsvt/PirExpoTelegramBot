@@ -8,12 +8,12 @@ from bot.utils.states import User
 
 class LoggedIn(Filter):
     async def __call__(self, message: Message, state: FSMContext) -> bool:
-
-        if await state.get_state() == "User:logged_in":
+        current_state = await state.get_state()
+        if current_state == "User:logged_in":
             return True
         else:
-            user_data = get_user_data(message.chat.id)
-            if user_data.get("detail"):
+            user_data = await get_user_data(message.from_user.id)
+            if user_data.get("detail") or user_data is {}:
                 return False
             else:
                 await state.set_state(User.logged_in)
@@ -22,12 +22,29 @@ class LoggedIn(Filter):
 
 class LoggedOut(Filter):
     async def __call__(self, message: Message, state: FSMContext) -> bool:
-        if await state.get_state() == "User:logged_out":
+        current_state = await state.get_state()
+        if current_state == "User:logged_out":
             return True
         else:
-            user_data = get_user_data(message.chat.id)
-            if user_data.get("detail"):
+            user_data = await get_user_data(message.from_user.id)
+            if user_data.get("detail") or user_data is {}:
                 await state.set_state(User.logged_out)
                 return True
             else:
                 return False
+
+
+class CheckReady(Filter):
+    async def __call__(self, message: Message, state: FSMContext) -> bool:
+        current_state = await state.get_state()
+        if current_state == "User:logged_in":
+            return True
+        elif current_state == "Exhibitors:searching":
+            return False
+        else:
+            user_data = await get_user_data(message.from_user.id)
+            if user_data.get("detail") or user_data is {}:
+                return False
+            else:
+                await state.set_state(User.logged_in)
+                return True

@@ -1,7 +1,7 @@
 import aiohttp
 
 
-async def request_json(url: str, params: dict):
+async def get_request(url: str, params: dict):
     async with aiohttp.ClientSession() as session:
         async with session.get(url, params=params) as response:
             json_response = await response.json()
@@ -9,3 +9,9 @@ async def request_json(url: str, params: dict):
                 return json_response
             else:
                 return {}
+
+
+async def post_request(url: str, params: dict, data: dict):
+    async with aiohttp.ClientSession() as session:
+        async with session.post(url, params=params, data=data):
+            pass

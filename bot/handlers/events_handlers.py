@@ -2,7 +2,8 @@ import aiohttp
 from aiogram import F, Router, types
 from aiogram.enums import ChatAction, ParseMode
 
-from bot.callbacks.events_callbacks import EventsList, EventDetails, EventsThemes, EventPrint
+from bot.callbacks.events_callbacks import (EventDetails, EventPrint,
+                                            EventsList, EventsThemes)
 from bot.data.events_data import (get_event_data, get_event_themes,
                                   get_events_list)
 from bot.data.tickets_data import get_ticket_list_by_event
@@ -74,7 +75,7 @@ async def callback_events_details_view(callback: types.CallbackQuery, callback_d
 
 # Хендлер по отправке pdf билета по ticket_type
 @router.callback_query(LoggedIn(), EventPrint.filter())
-async def callback_events_print(callback: types.CallbackQuery, callback_data: EventPrint):
+async def callback_events_print(callback: types.CallbackQuery,callback_data:EventPrint):
     ticket_type_id = callback_data.ticket_type_id
 
     ticket_list = await get_ticket_list_by_event(chat_id=callback.message.chat.id, ticket_type_id=ticket_type_id)

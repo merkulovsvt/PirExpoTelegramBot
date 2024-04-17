@@ -2,7 +2,9 @@ from aiogram import F, Router, types
 from aiogram.enums import ChatAction
 from aiogram.fsm.context import FSMContext
 
-from bot.callbacks.exhibitors_callback import ExhibitorsSearchType, ExhibitorDetails, ExhibitorsList
+from bot.callbacks.exhibitors_callback import (ExhibitorDetails,
+                                               ExhibitorsList,
+                                               ExhibitorsSearchType)
 from bot.data.exhibitors_data import (get_exhibitor_details,
                                       get_exhibitors_letters,
                                       get_exhibitors_list)
@@ -37,6 +39,7 @@ async def callback_exhibitors_menu_view(callback: types.CallbackQuery):
 async def callback_exhibitors_search_type(callback: types.CallbackQuery, callback_data: ExhibitorsSearchType,
                                           state: FSMContext):
     search_type = callback_data.search_type
+    new_message = callback_data.new_message
 
     if search_type == "letter":
         letters = await get_exhibitors_letters()
@@ -45,12 +48,16 @@ async def callback_exhibitors_search_type(callback: types.CallbackQuery, callbac
 
     elif search_type == "name":
         await state.set_state(Exhibitors.searching)
-        await callback.message.answer(text="Введите название компании:")
+
+        if new_message:
+            await callback.message.answer(text="Введите название компании:")
+        else:
+            await callback.message.edit_text(text="Введите название компании:")
 
     await callback.answer()
 
 
-ignore_text = ["🛒 Заказы", "🎫 Билеты", "🗓️ Расписание", "🎉 Мероприятия", "🤝 Экспоненты"]
+ignore_text = ["🛒 заказы", "🎫 билеты", "🗓️ расписание", "🎉 мероприятия", "🤝 экспоненты"]
 
 
 # Хендлер по поиску по названию

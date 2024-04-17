@@ -2,7 +2,8 @@ import aiohttp
 from aiogram import F, Router, types
 from aiogram.enums import ChatAction, ParseMode
 
-from bot.callbacks.tickets_callbacks import TicketsList, TicketDetails, TicketPrint
+from bot.callbacks.tickets_callbacks import (TicketDetails, TicketPrint,
+                                             TicketsList)
 from bot.data.events_data import get_event_data
 from bot.data.tickets_data import (get_ticket_details, get_tickets_list,
                                    tickets_status_check)

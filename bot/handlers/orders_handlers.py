@@ -2,7 +2,7 @@ import aiohttp
 from aiogram import F, Router, types
 from aiogram.enums import ChatAction
 
-from bot.callbacks.orders_callbacks import OrderDetails, InvoicePrint
+from bot.callbacks.orders_callbacks import InvoicePrint, OrderDetails
 from bot.data.orders_data import get_order_details, get_orders_list
 from bot.keyboards.orders_boards import (inline_order_details,
                                          inline_orders_list)

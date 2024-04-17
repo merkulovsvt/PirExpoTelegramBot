@@ -31,9 +31,13 @@ def reply_main_menu(phone=None) -> (str, ReplyKeyboardBuilder):
         builder.add(KeyboardButton(text=elem))
     builder.adjust(2, 2, 2)
 
+    start_text = ('Добро пожаловать в нашего бота!\nМы - компания Пир Экспо, занимаемся организацией выставок в сфере '
+                  'гостеприимства.\nУ нас вы найдете самые актуальные и интересные мероприятия, которые помогут вам '
+                  'развиваться и находить новых партнеров. Приятного использования нашего бота!')
+
     if phone:
-        text = f"Вы успешно зарегистрировались по номеру {phone}!"
+        text = f"Вы успешно зарегистрировались по номеру {phone}!\n" + start_text
     else:
-        text = f"Вы уже вошли в систему!"
+        text = start_text
 
     return text, builder.as_markup(resize_keyboard=True)

@@ -3,9 +3,10 @@ from datetime import datetime
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from bot.callbacks.orders_callbacks import OrderDetails
-from bot.callbacks.tickets_callbacks import TicketsList, TicketDetails,TicketPrint
 from bot.callbacks.events_callbacks import EventPrint
+from bot.callbacks.orders_callbacks import OrderDetails
+from bot.callbacks.tickets_callbacks import (TicketDetails, TicketPrint,
+                                             TicketsList)
 
 
 # Inline клавиатура для выбора типа билета +
@@ -74,7 +75,8 @@ def inline_ticket_details(event_data: dict, order_id: str, ticket_id: str, ticke
         builder.button(text="Скачать", callback_data=TicketPrint(ticket_id=ticket_id))
 
         # text = f"Входной билет №{ticket_id} на {ticket_details['ticket_owner_name']}" #TODO
-        text = f"Входной билет №{ticket_id}"
+        text = (f"Входной билет №{ticket_id}\n"
+                f"Принадлежит заказу №{order_id}.")
         builder.button(text="Редактировать", url="zaza.com")  # Ждём ссылку от Леши
 
         if order_id != "*":

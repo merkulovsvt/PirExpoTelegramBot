@@ -3,15 +3,15 @@ import logging
 
 from aiogram import Bot, Dispatcher
 
-from bot.handlers import (exhibitors_handlers, orders_handlers, tickets_handlers,
-                          user_handlers, events_handlers, timetable_handlers, partners_handlers)
-from bot.utils.config import set_commands, token
+from bot.handlers import (events_handlers, exhibitors_handlers,
+                          orders_handlers, partners_handlers, tickets_handlers,
+                          timetable_handlers, user_handlers)
+from bot.utils.config import token
 
 
 async def main():
     bot = Bot(token=token)
     logging.basicConfig(level=logging.INFO)
-    await set_commands(bot)
 
     dp = Dispatcher()
     dp.include_routers(user_handlers.router, orders_handlers.router, tickets_handlers.router,

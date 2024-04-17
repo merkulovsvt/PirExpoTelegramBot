@@ -3,7 +3,9 @@ import math
 from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from bot.callbacks.exhibitors_callback import ExhibitorsSearchType, ExhibitorsList, ExhibitorDetails
+from bot.callbacks.exhibitors_callback import (ExhibitorDetails,
+                                               ExhibitorsList,
+                                               ExhibitorsSearchType)
 
 
 # Inline клавиатура для меню экспонентов +
@@ -11,11 +13,13 @@ def inline_exhibitors_menu():
     builder = InlineKeyboardBuilder()
     text = "Это меню экспонентов. Нажмите на кнопку для продолжения."
 
-    builder.button(text="Поиск по названию", callback_data=ExhibitorsSearchType(search_type='name'))
-    builder.button(text="Поиск по алфавиту", callback_data=ExhibitorsSearchType(search_type='letter'))
+    builder.button(text="Поиск по названию", callback_data=ExhibitorsSearchType(search_type='name',
+                                                                                new_message=False))
+    builder.button(text="Поиск по алфавиту", callback_data=ExhibitorsSearchType(search_type='letter',
+                                                                                new_message=False))
 
-    builder.button(text="Все экспоненты",
-                   callback_data=ExhibitorsList(full=True, letter="*", page=1, user_input="*"))
+    builder.button(text="Все экспоненты", callback_data=ExhibitorsList(full=True, letter="*", page=1,
+                                                                       user_input="*"))
     builder.adjust(2, 1)
     return text, builder.as_markup()
 
@@ -84,7 +88,14 @@ def inline_exhibitors_list(exhibitors: list, prev_callback_data: dict, list_type
 
         builder.adjust(*[1 for _ in range(buttons_count)], 3, 1)
     else:
-        builder.button(text="Продолжить поиск", callback_data=ExhibitorsSearchType(search_type=list_type))
+
+        if exhibitors:
+            builder.button(text="Повторить поиск", callback_data=ExhibitorsSearchType(search_type=list_type,
+                                                                                      new_message=True))
+        else:
+            builder.button(text="Продолжить поиск", callback_data=ExhibitorsSearchType(search_type=list_type,
+                                                                                       new_message=False))
+
         builder.button(text="Отменить поиск", callback_data="exhibitors_menu")
 
         builder.adjust(*[1 for _ in range(buttons_count)], 3, 2)

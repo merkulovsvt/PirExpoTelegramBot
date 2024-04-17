@@ -2,7 +2,8 @@ from datetime import datetime
 
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from bot.callbacks.events_callbacks import EventsList, EventsThemes, EventDetails, EventPrint
+from bot.callbacks.events_callbacks import (EventDetails, EventPrint,
+                                            EventsList, EventsThemes)
 from bot.callbacks.timetable_callbacks import TimetableEventsList
 
 

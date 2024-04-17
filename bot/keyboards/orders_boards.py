@@ -3,7 +3,7 @@ from datetime import datetime
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from bot.callbacks.orders_callbacks import OrderDetails, InvoicePrint
+from bot.callbacks.orders_callbacks import InvoicePrint, OrderDetails
 from bot.callbacks.tickets_callbacks import TicketsList
 from bot.data.orders_data import tickets_status_check
 
@@ -16,13 +16,13 @@ def inline_orders_list(orders: dict) -> (str, InlineKeyboardMarkup):
     for order in orders:
         if order["status"] == 3 and tickets_status_check(order=order):
             date = datetime.fromisoformat(order['date']).strftime('%d.%m.%Y')
-            orders_list.append((date, order["id"], order["sum"]))
+            orders_list.append((date, order["id"]))
 
     if orders_list:
         text = "Ваши заказы:"
 
         for order in sorted(orders_list, key=lambda x: x[0]):
-            button_text = f"Заказ №{order[1]} от {order[0]} на сумму {order[2]}"
+            button_text = f"Заказ №{order[1]} от {order[0]}"
 
             order_id = str(order[1])
             builder.button(text=button_text, callback_data=OrderDetails(order_id=order_id))
@@ -36,7 +36,11 @@ def inline_orders_list(orders: dict) -> (str, InlineKeyboardMarkup):
 # Inline клавиатура для вывода деталей заказа
 def inline_order_details(order_id: str, order_details: dict) -> (str, InlineKeyboardMarkup):
     builder = InlineKeyboardBuilder()
-    text = f"Детали заказа №{order_id}:"
+    date = datetime.fromisoformat(order_details['date']).strftime('%d.%m.%Y')
+
+    text = (f"Детали заказа №{order_id}:\n"
+            f"Дата заказа {date}.\n"
+            f"Сумма заказа: {order_details.get('sum')} руб.")
 
     if order_details["status"] == 3:
         builder.button(text="🎫 Билеты", callback_data=TicketsList(ticket_type="*", order_id=order_id))
@@ -47,10 +51,10 @@ def inline_order_details(order_id: str, order_details: dict) -> (str, InlineKeyb
             builder.button(text="УПД", callback_data="1235")  # Доделать
             builder.button(text="🛒 Вернутся к заказам", callback_data="orders_list")
 
-            builder.adjust(1, 2, 1)
+            builder.adjust(2, 2, 1)
         else:
             builder.button(text="🛒 Вернутся к заказам", callback_data="orders_list")
 
-            builder.adjust(1, repeat=True)
+            builder.adjust(2, 1)
 
     return text, builder.as_markup()

@@ -1,7 +1,8 @@
 from aiogram import F, Router, types
 from aiogram.enums import ChatAction
 
-from bot.callbacks.partners_callbacks import PartnersTypes, PartnersList, PartnerDetails
+from bot.callbacks.partners_callbacks import (PartnerDetails, PartnersList,
+                                              PartnersTypes)
 from bot.data.partners_data import (get_partner_details, get_partners_list,
                                     get_themes_list)
 from bot.keyboards.partners_boards import (inline_partner_details,
