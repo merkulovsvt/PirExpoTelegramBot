@@ -1,3 +1,4 @@
+import aiohttp
 from aiogram import F, Router, types
 from aiogram.enums import ChatAction
 
@@ -55,12 +56,17 @@ async def callback_order_invoice_send(callback: types.CallbackQuery, callback_da
     order_id = callback_data.order_id
 
     order_details = await get_order_details(order_id=order_id)
-    pdf_url = order_details["invoice_pdf_url"]
+    url = order_details["invoice_pdf_url"]
 
-    if pdf_url:
-        await callback.message.bot.send_chat_action(chat_id=callback.message.chat.id, action=ChatAction.UPLOAD_DOCUMENT)
-        await callback.message.reply_document(document=types.URLInputFile(pdf_url, filename=f"invoice_{order_id}.pdf "),
-                                              caption=f"Счет-договор по заказу #{order_id}")
-    else:
-        await callback.message.answer(text=f"К сожалению, не можем прислать счет-договор к заказу №{order_id}")
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            if response.status == 200:
+                result = await response.read()
+                await callback.message.bot.send_chat_action(chat_id=callback.message.chat.id,
+                                                            action=ChatAction.UPLOAD_DOCUMENT)
+
+                await callback.bot.send_document(callback.message.chat.id, document=types.BufferedInputFile(
+                    file=result, filename=f'invoice_{order_id}.pdf'), caption=f"Счет-договор по заказу #{order_id}")
+            else:
+                await callback.message.answer(text=f"К сожалению, не можем прислать счет-договор к заказу №{order_id}")
     await callback.answer()
