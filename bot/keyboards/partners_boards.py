@@ -29,7 +29,7 @@ def inline_partner_type_list(partners_list: dict, theme_id: str):
     for type in sorted(type_set, key=lambda x: x[0]):
         builder.button(text=type[0], callback_data=PartnersList(theme_id=theme_id, type_id=type[1]))
 
-    builder.button(text="Вернуться к выбору выставки", callback_data="partner_themes_list")
+    builder.button(text="🤝 Вернуться к выбору выставки", callback_data="partner_themes_list")
 
     builder.adjust(1, repeat=True)
     return text, builder.as_markup()
@@ -48,7 +48,7 @@ def inline_partners_list(partners_list: dict, theme_id: str, type_id: str):
     for partner in sorted(partner_set, key=lambda x: x[0]):
         builder.button(text=partner[0], callback_data=PartnerDetails(partner_id=partner[1]))
 
-    builder.button(text="Вернуться к выбору типов", callback_data=PartnersTypes(theme_id=theme_id))
+    builder.button(text="🤝 Вернуться к выбору типов", callback_data=PartnersTypes(theme_id=theme_id))
 
     builder.adjust(1, repeat=True)
     return text, builder.as_markup()
@@ -61,13 +61,43 @@ def inline_partner_details(partner_details: dict):
     theme_id = str(partner_details["themes"][0]["id"])
     type_id = str(partner_details["type"]["id"])
 
-    text = (f"{partner_details['name']}\n" + f"{partner_details['status']}\n" +
-            f"{partner_details['description']}\n" + f"{partner_details['contact']}\n")
+    text = ''
 
-    if partner_details.get("website"):
-        builder.button(text="Ссылка на сайт партнёра", url=partner_details["website"])
+    if partner_details.get('name'):
+        text += f"<b>Компания</b>: {partner_details.get('name')}\n\n"
 
-    builder.button(text="Вернуться к списку партнёров", callback_data=PartnersList(theme_id=theme_id, type_id=type_id))
+    if partner_details.get('status'):
+        text += f"<b>Статус</b>: {partner_details.get('status')}\n\n"
+    elif partner_details.get('type'):
+        types_set = set()
+
+        if type(partner_details.get('type')) == list:
+            for partner_type in partner_details.get('type'):
+                types_set.add(partner_type.get("name"))
+        elif type(partner_details.get('type')) == dict:
+            types_set.add(partner_details.get('type').get("name"))
+
+        types_string = ", ".join(map(str, types_set))
+        text += f"<b>Статус</b>: {types_string}\n\n"
+
+    if partner_details.get('description'):
+        text += f"<b>Описание</b>: {partner_details.get('description')}\n\n"
+
+    if partner_details.get('themes'):
+        themes_set = set()
+        for theme in partner_details.get('themes'):
+            themes_set.add(theme.get("name"))
+        themes_string = ", ".join(map(str, themes_set))
+        text += f"<b>Тематики</b>: {themes_string}\n\n"
+
+    if partner_details.get('contact'):
+        text += f"<b>Телефон</b>: {partner_details.get('contact')}\n\n"
+
+    if partner_details.get('website'):
+        text += f"<b>Сайт</b>: {partner_details.get('website')}\n\n"
+
+    builder.button(text="🤝 Вернуться к списку партнёров",
+                   callback_data=PartnersList(theme_id=theme_id, type_id=type_id))
 
     builder.adjust(1, repeat=True)
     return text, builder.as_markup()

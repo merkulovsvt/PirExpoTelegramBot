@@ -1,5 +1,5 @@
 from aiogram import F, Router, types
-from aiogram.enums import ChatAction
+from aiogram.enums import ChatAction, ParseMode
 from aiogram.fsm.context import FSMContext
 
 from bot.callbacks.exhibitors_callback import (ExhibitorDetails,
@@ -115,7 +115,7 @@ async def callback_exhibitor_details(callback: types.CallbackQuery, callback_dat
 
     text, keyboard = inline_exhibitors_details(exhibitor_details=exhibitor_details,
                                                exhibitors_list_data=exhibitors_list_data)
-    await callback.message.edit_text(text=text, reply_markup=keyboard)
+    await callback.message.edit_text(text=text, reply_markup=keyboard, parse_mode=ParseMode.HTML)
     await callback.answer()
 
 

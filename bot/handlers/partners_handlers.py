@@ -1,5 +1,5 @@
 from aiogram import F, Router, types
-from aiogram.enums import ChatAction
+from aiogram.enums import ChatAction, ParseMode
 
 from bot.callbacks.partners_callbacks import (PartnerDetails, PartnersList,
                                               PartnersTypes)
@@ -68,5 +68,5 @@ async def callback_partners_details_view(callback: types.CallbackQuery, callback
     partner_details = await get_partner_details(partner_id=partner_id)
 
     text, keyboard = inline_partner_details(partner_details=partner_details)
-    await callback.message.edit_text(text=text, reply_markup=keyboard)
+    await callback.message.edit_text(text=text, reply_markup=keyboard, parse_mode=ParseMode.HTML)
     await callback.answer()

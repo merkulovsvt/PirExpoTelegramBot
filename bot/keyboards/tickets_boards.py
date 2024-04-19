@@ -28,33 +28,38 @@ def inline_tickets_list(tickets: dict, ticket_type: str, order_id: str):
 
     if ticket_type == "entry":
         text = "Входные билеты:"
-        return_button_text = "Вернуться к выбору категории"
+        return_button_text = "🎫 Вернуться к выбору категории"
         callback_data = "tickets_menu"
 
     elif ticket_type == "event":
         text = "Билеты на мероприятия:"
-        return_button_text = "Вернуться к выбору категории"
+        return_button_text = "🎫 Вернуться к выбору категории"
         callback_data = "tickets_menu"
 
     else:
         text = f"Билеты заказа №{order_id}"
-        return_button_text = "Вернуться к заказу"
+        return_button_text = "🛒 Вернуться к заказу"
         callback_data = OrderDetails(order_id=order_id)
 
+    tickets_set = set()
     for ticket in tickets:
-        if ticket["ticket_type"]["is_event"]:
-            button_text = f"Билет №{ticket['id']} на мероприятие \"{ticket['ticket_type']['name']}\""
+        tickets_set.add((ticket['id'], ticket["ticket_type"]["is_event"],
+                         ticket['ticket_type']['name'], ticket['status']))
+
+    for ticket in sorted(tickets_set, key=lambda x: (x[1], len(x[2]))):
+        if ticket[1]:
+            event_name = ticket[2].strip("\"")
+            button_text = f"Билет №{ticket[0]} \"{event_name}\""
         else:
-            button_text = f"Входной билет №{ticket['id']}"
+            button_text = f"Входной билет №{ticket[0]}"
             # button_text = f"Входной билет №{ticket['id']} на {tickets[ticket_id]['ticket_owner_name']}" #TODO
 
-        if (ticket_type == "*" or (ticket["ticket_type"]["is_event"] and ticket_type == "event") or (
-                not ticket["ticket_type"]["is_event"] and ticket_type == "entry")) and ticket["status"] == "2":
+        if (ticket_type == "*" or (ticket[1] and ticket_type == "event") or (
+                not ticket[1] and ticket_type == "entry")) and ticket[3] == "2":
             list_empty = False
             builder.button(text=button_text, callback_data=TicketDetails(order_id=order_id,
-                                                                         ticket_id=str(ticket["id"]),
-                                                                         ticket_type="event" if ticket["ticket_type"][
-                                                                             "is_event"] else "entry"))
+                                                                         ticket_id=str(ticket[0]),
+                                                                         ticket_type="event" if ticket[1] else "entry"))
 
     if ticket_type != "*" and list_empty:
         text = "К сожалению, у вас нет билетов в данной категории"
@@ -70,13 +75,12 @@ def inline_tickets_list(tickets: dict, ticket_type: str, order_id: str):
 # Inline клавиатура для вывода деталей билета
 def inline_ticket_details(event_data: dict, order_id: str, ticket_id: str, ticket_type: str):
     builder = InlineKeyboardBuilder()
-
     if ticket_type == "entry":
         builder.button(text="Скачать", callback_data=TicketPrint(ticket_id=ticket_id))
 
         # text = f"Входной билет №{ticket_id} на {ticket_details['ticket_owner_name']}" #TODO
-        text = (f"Входной билет №{ticket_id}\n"
-                f"Принадлежит заказу №{order_id}.")
+        text = f"Входной билет №{ticket_id}\n"
+        # + f"Принадлежит заказу №{order_id}.")
         builder.button(text="Редактировать", url="zaza.com")  # Ждём ссылку от Леши
 
         if order_id != "*":

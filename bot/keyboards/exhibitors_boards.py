@@ -84,7 +84,7 @@ def inline_exhibitors_list(exhibitors: list, prev_callback_data: dict, list_type
         text = "По вашему запросу компаний не найдено"
 
     if list_type == "full":
-        builder.button(text="Вернуться в меню", callback_data="exhibitors_menu")
+        builder.button(text="🤝 Вернуться в меню", callback_data="exhibitors_menu")
 
         builder.adjust(*[1 for _ in range(buttons_count)], 3, 1)
     else:
@@ -115,13 +115,26 @@ def inline_exhibitors_details(exhibitor_details: dict, exhibitors_list_data: dic
     for elem in exhibitor_details['booths']:
         booths_data += f'Зал {elem.get("hall_number")} {elem.get("booth_number")} '
 
-    text = (f"Компания: {exhibitor_details.get('name')}\n"
-            f"Описание: {exhibitor_details.get('description')}\n"
-            f"Телефон: {exhibitor_details.get('phone')}\n"
-            f"Почта: {exhibitor_details.get('email')}\n"
-            f"Сайт: {exhibitor_details.get('website')}\n"
-            f"Расположение: {booths_data}")
+    text = ''
 
-    builder.button(text="Вернуться к списку экспонентов",
+    if exhibitor_details.get('name'):
+        text += f"<b>Компания</b>: {exhibitor_details.get('name')}\n\n"
+
+    if exhibitor_details.get('description'):
+        text += f"<b>Описание</b>: {exhibitor_details.get('description')}\n\n"
+
+    if exhibitor_details.get('phone'):
+        text += f"<b>Телефон</b>: {exhibitor_details.get('phone')}\n\n"
+
+    if exhibitor_details.get('email'):
+        text += f"<b>Почта</b>: {exhibitor_details.get('email')}\n\n"
+
+    if exhibitor_details.get('website'):
+        text += f"<b>Сайт</b>: {exhibitor_details.get('website')}\n\n"
+
+    if booths_data:
+        text += f"<b>Расположение</b>: {exhibitor_details.get('booths_data')}\n\n"
+
+    builder.button(text="🤝 Вернуться к списку экспонентов",
                    callback_data=ExhibitorsList(full=full, letter=letter, page=page, user_input=user_input))
     return text, builder.as_markup()

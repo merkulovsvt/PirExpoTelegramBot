@@ -34,22 +34,22 @@ def inline_timetable_events_list(events: dict, event_date: str):
 
     text = f"Мероприятия на {datetime.strptime(event_date, '%Y-%m-%d').strftime('%d.%m')}"
 
-    event_list = []
-    min_name_len = float("inf")  # TODO
+    events_set = set()
+    min_name_len = float("inf")
     for event in events:
-        event_list.append((event.get('id'), event.get('name'), event.get("time_start"), event.get('time_finish')))
+        events_set.add((event.get('id'), event.get('name'), event.get("time_start"), event.get('time_finish')))
         min_name_len = min(min_name_len, len(event['name']))
 
-    for id, name, time_start, time_finish in sorted(event_list, key=lambda x: x[2]):
+    for id, name, time_start, time_finish in sorted(events_set, key=lambda x: x[2]):
         time_start = datetime.fromisoformat(time_start).strftime('%H:%M')
         time_finish = datetime.fromisoformat(time_finish).strftime('%H:%M')
 
-        event_name = name if len(name) < 27 else name[:27] + '...'
+        event_name = name.strip("\"") if len(name.strip("\"")) < 27 else name.strip("\"")[:27] + '...'
         button_text = f"{time_start} - {time_finish} {event_name}"
 
-        event_id = str(id)
-        builder.button(text=button_text, callback_data=EventDetails(theme_id='*', event_id=event_id))
+        builder.button(text=button_text, callback_data=EventDetails(theme_id='*', event_id=str(id)))
 
     builder.button(text="📅 Вернуться к выбору дня", callback_data="timetable_dates_list")
-    builder.adjust(1)
+
+    builder.adjust(1, repeat=True)
     return text, builder.as_markup()

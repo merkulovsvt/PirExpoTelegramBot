@@ -13,11 +13,16 @@ class LoggedIn(Filter):
             return True
         else:
             user_data = await get_user_data(message.from_user.id)
-            if user_data.get("detail") or user_data is {}:
-                return False
-            else:
+            if user_data:
                 await state.set_state(User.logged_in)
                 return True
+            else:
+                return False
+            # if user_data.get("detail") or user_data is {}:
+            #     return False
+            # else:
+            #     await state.set_state(User.logged_in)
+            #     return True
 
 
 class LoggedOut(Filter):
@@ -27,11 +32,16 @@ class LoggedOut(Filter):
             return True
         else:
             user_data = await get_user_data(message.from_user.id)
-            if user_data.get("detail") or user_data is {}:
+            if user_data:
+                return False
+            else:
                 await state.set_state(User.logged_out)
                 return True
-            else:
-                return False
+            # if user_data.get("detail") or user_data is {}:
+            #     await state.set_state(User.logged_out)
+            #     return True
+            # else:
+            #     return False
 
 
 class CheckReady(Filter):
