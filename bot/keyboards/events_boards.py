@@ -82,7 +82,6 @@ def inline_events_list(events: dict, theme_id: str):
 # Inline клавиатура для вывода деталей мероприятия
 def inline_events_details(event_data: dict, theme_id: str):
     builder = InlineKeyboardBuilder()
-    id = event_data.get('id')
     event_name = event_data.get('name').strip("\"")
     type_name = event_data.get('type').get('name')
     ticket_type_id = event_data.get('ticket_type').get('id')
@@ -98,6 +97,8 @@ def inline_events_details(event_data: dict, theme_id: str):
             f"<b>Время:</b> <i>{time_start}</i> - <i>{time_finish}</i>\n\n"
             f"<b>{type_name}</b>: \"{event_name}\"\n\n"
             f"<b>Место</b>: {event_data.get('place').get('name') if event_data.get('place') else ''}")
+
+    text = text.replace("<br>", "\n")
 
     builder.button(text="Скачать билет", callback_data=EventPrint(ticket_type_id=str(ticket_type_id)))
 

@@ -133,7 +133,9 @@ def inline_exhibitors_details(exhibitor_details: dict, exhibitors_list_data: dic
         text += f"<b>Сайт</b>: {exhibitor_details.get('website')}\n\n"
 
     if booths_data:
-        text += f"<b>Расположение</b>: {exhibitor_details.get('booths_data')}\n\n"
+        text += f"<b>Расположение</b>: {booths_data}\n\n"
+
+    text = text.replace("<br>", "\n")
 
     builder.button(text="🤝 Вернуться к списку экспонентов",
                    callback_data=ExhibitorsList(full=full, letter=letter, page=page, user_input=user_input))
