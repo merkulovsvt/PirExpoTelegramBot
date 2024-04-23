@@ -59,7 +59,7 @@ def inline_events_list(events: dict, theme_id: str):
         events_set.add((event.get('id'), event.get('name').strip('\"')))
         min_name_len = min(min_name_len, len(event.get('name').strip('\"')))
 
-    for id, name in sorted(events_set, key=lambda x: len(x[1])):
+    for event_id, name in sorted(events_set, key=lambda x: len(x[1])):
 
         n_chars = 7
         if len(name) > min_name_len:
@@ -71,7 +71,7 @@ def inline_events_list(events: dict, theme_id: str):
             event_name = name
 
         button_text = event_name
-        builder.button(text=button_text, callback_data=EventDetails(theme_id=theme_id, event_id=str(id)))
+        builder.button(text=button_text, callback_data=EventDetails(theme_id=theme_id, event_id=str(event_id)))
 
     builder.button(text="🎉 Вернуться к выбору темы мероприятий", callback_data=EventsThemes(events_type="my"))
 

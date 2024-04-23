@@ -91,7 +91,7 @@ def inline_ticket_details(event_data: dict, order_id: str, ticket_id: str, ticke
         builder.adjust(2, 1, 1)
 
     else:
-        name = event_data.get('name')
+        name = event_data.get('name').strip("\"")
         type_name = event_data.get('type').get('name')
         ticket_type_id = event_data.get('ticket_type').get('id')
 

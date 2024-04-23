@@ -12,7 +12,7 @@ class LoggedIn(Filter):
         if current_state == "User:logged_in":
             return True
         else:
-            user_data = await get_user_data(message.from_user.id)
+            user_data = await get_user_data(chat_id=message.from_user.id)
             if user_data:
                 await state.set_state(User.logged_in)
                 return True
@@ -31,7 +31,7 @@ class LoggedOut(Filter):
         if current_state == "User:logged_out":
             return True
         else:
-            user_data = await get_user_data(message.from_user.id)
+            user_data = await get_user_data(chat_id=message.from_user.id)
             if user_data:
                 return False
             else:

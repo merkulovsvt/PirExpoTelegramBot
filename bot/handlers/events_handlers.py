@@ -1,4 +1,3 @@
-import aiohttp
 from aiogram import F, Router, types
 from aiogram.enums import ChatAction, ParseMode
 
@@ -6,7 +5,7 @@ from bot.callbacks.events_callbacks import (EventDetails, EventPrint,
                                             EventsList, EventsThemes)
 from bot.data.events_data import (get_event_data, get_event_themes,
                                   get_events_list)
-from bot.data.tickets_data import get_ticket_list_by_event
+from bot.data.tickets_data import get_ticket_list_by_event, get_ticket_pdf
 from bot.keyboards.events_boards import (inline_event_categories,
                                          inline_events_details,
                                          inline_events_list,
@@ -75,7 +74,7 @@ async def callback_events_details_view(callback: types.CallbackQuery, callback_d
 
 # Хендлер по отправке pdf билета по ticket_type
 @router.callback_query(LoggedIn(), EventPrint.filter())
-async def callback_events_print(callback: types.CallbackQuery,callback_data:EventPrint):
+async def callback_events_print(callback: types.CallbackQuery, callback_data: EventPrint):
     ticket_type_id = callback_data.ticket_type_id
 
     ticket_list = await get_ticket_list_by_event(chat_id=callback.message.chat.id, ticket_type_id=ticket_type_id)
@@ -83,20 +82,18 @@ async def callback_events_print(callback: types.CallbackQuery,callback_data:Even
     for ticket in ticket_list:
 
         url = ticket["pdf_url"]
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as response:
-                if response.status == 200:
-                    result = await response.read()
-                    await callback.message.bot.send_chat_action(chat_id=callback.message.chat.id,
-                                                                action=ChatAction.UPLOAD_DOCUMENT)
-
-                    await callback.bot.send_document(callback.message.chat.id, document=types.BufferedInputFile(
-                        file=result, filename=f'Билет #{ticket["id"]}.pdf'),
-                                                     caption=f"Билет #{ticket['id']} на "
-                                                             f"мероприятие\n\"{ticket['ticket_type']['name']}\"")
-                else:
-                    await callback.message.reply(
-                        text=f"К сожалению, не можем прислать билет №{ticket['id']} на"
-                             f"\"мероприятие\n\"{ticket['ticket_type']['name']}\"")
+        result = await get_ticket_pdf(url=url)
+        if result:
+            await callback.message.bot.send_chat_action(chat_id=callback.message.chat.id,
+                                                        action=ChatAction.UPLOAD_DOCUMENT)
+            event_name = ticket['ticket_type']['name'].strip("\"")
+            await callback.bot.send_document(callback.message.chat.id, document=types.BufferedInputFile(
+                file=result, filename=f'Билет #{ticket["id"]}.pdf'),
+                                             caption=f"Билет #{ticket['id']} на "
+                                                     f"мероприятие:\n\"{event_name}\"")
+        else:
+            await callback.message.reply(
+                text=f"К сожалению, не можем прислать билет №{ticket['id']} на"
+                     f"\"мероприятие\n\"{ticket['ticket_type']['name']}\"")
 
         await callback.answer()

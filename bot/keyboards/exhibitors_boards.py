@@ -27,12 +27,15 @@ def inline_exhibitors_menu():
 # Inline клавиатура для поиска по букве
 def inline_exhibitors_letter_search(letters: list):
     builder = InlineKeyboardBuilder()
-    text = "Выберите первый символ поиска:"
+    if letters:
+        text = "Выберите первый символ поиска:"
 
-    for letter in letters:
-        builder.button(text=letter,
-                       callback_data=ExhibitorsList(full=False, letter=letter, page=1, user_input="*"))
-    builder.adjust(5, repeat=True)
+        for letter in letters:
+            builder.button(text=letter,
+                           callback_data=ExhibitorsList(full=False, letter=letter, page=1, user_input="*"))
+        builder.adjust(5, repeat=True)
+    else:
+        text = "К сожалению, данная функция недоступна."
 
     builder.row(InlineKeyboardButton(text="Отменить поиск", callback_data="exhibitors_menu"))
 

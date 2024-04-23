@@ -1,12 +1,11 @@
-import aiohttp
 from aiogram import F, Router, types
 from aiogram.enums import ChatAction, ParseMode
 
 from bot.callbacks.tickets_callbacks import (TicketDetails, TicketPrint,
                                              TicketsList)
 from bot.data.events_data import get_event_data
-from bot.data.tickets_data import (get_ticket_details, get_tickets_list,
-                                   tickets_status_check)
+from bot.data.tickets_data import (get_ticket_details, get_ticket_pdf,
+                                   get_tickets_list, tickets_status_check)
 from bot.keyboards.tickets_boards import (inline_ticket_details,
                                           inline_ticket_types,
                                           inline_tickets_list)
@@ -79,19 +78,17 @@ async def callback_ticket_details_view(callback: types.CallbackQuery, callback_d
 @router.callback_query(LoggedIn(), TicketPrint.filter())
 async def callback_ticket_print_view(callback: types.CallbackQuery, callback_data: TicketPrint):
     ticket_id = callback_data.ticket_id
-
     ticket_details = await get_ticket_details(ticket_id=ticket_id)
+
     url = ticket_details["pdf_url"]
+    result = await get_ticket_pdf(url=url)
+    if result:
+        await callback.message.bot.send_chat_action(chat_id=callback.message.chat.id,
+                                                    action=ChatAction.UPLOAD_DOCUMENT)
 
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as response:
-            if response.status == 200:
-                result = await response.read()
-                await callback.message.bot.send_chat_action(chat_id=callback.message.chat.id,
-                                                            action=ChatAction.UPLOAD_DOCUMENT)
+        await callback.bot.send_document(callback.message.chat.id, document=types.BufferedInputFile(
+            file=result, filename=f'Входной билет #{ticket_id}.pdf'), caption=f"Входной билет #{ticket_id}")
+    else:
+        await callback.message.answer(text=f"К сожалению, не можем прислать билет №{ticket_id}")
 
-                await callback.bot.send_document(callback.message.chat.id, document=types.BufferedInputFile(
-                    file=result, filename=f'Входной билет #{ticket_id}.pdf'), caption=f"Входной билет #{ticket_id}")
-            else:
-                await callback.message.answer(text=f"К сожалению, не можем прислать билет №{ticket_id}")
     await callback.answer()
