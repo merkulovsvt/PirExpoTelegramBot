@@ -1,0 +1,12 @@
+version: "3"
+services:
+  expocab-bot-bestchefs:
+    build: ../../OneDrive/Documents
+    command: python main.py
+    volumes:
+      - ./.env.best:/home/appuser/.env
+  expocab-bot-cakeshow:
+    build: ../../OneDrive/Documents
+    command: python main.py
+    volumes:
+      - ./.env.cake:/home/appuser/.env
