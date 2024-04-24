@@ -1,7 +1,7 @@
 from aiogram.types import KeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
 
-from bot.utils.config import exhibition_url
+from bot.utils.config import exhibition_url, bot_start_text
 
 
 # Inline клавиатура для /start +
@@ -9,10 +9,9 @@ def inline_start() -> (str, InlineKeyboardBuilder):
     builder = InlineKeyboardBuilder()
     builder.button(text="Наш сайт", url=exhibition_url)
 
-    text = ("Добро пожаловать в нашего бота! Мы - компания Пир Экспо, занимаемся организацией выставок в сфере "
-            "гостеприимства. У нас вы найдете самые актуальные и интересные мероприятия, которые помогут вам "
-            "развиваться и находить новых партнеров. Приятного использования нашего бота!")
-    return text, builder.as_markup()
+    start_text = bot_start_text
+
+    return start_text, builder.as_markup()
 
 
 # Reply клавиатура для отправки номера телефона пользователем +
@@ -33,9 +32,7 @@ def reply_main_menu(phone=None) -> (str, ReplyKeyboardBuilder):
         builder.add(KeyboardButton(text=elem))
     builder.adjust(2, 2, 2)
 
-    start_text = ('Добро пожаловать в нашего бота!\nМы - компания Пир Экспо, занимаемся организацией выставок в сфере '
-                  'гостеприимства.\nУ нас вы найдете самые актуальные и интересные мероприятия, которые помогут вам '
-                  'развиваться и находить новых партнеров. Приятного использования нашего бота!')
+    start_text = bot_start_text
 
     if phone:
         text = f"Вы успешно зарегистрировались по номеру {phone}!\n" + start_text

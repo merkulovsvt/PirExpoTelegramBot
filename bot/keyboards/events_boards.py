@@ -5,6 +5,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from bot.callbacks.events_callbacks import (EventDetails, EventPrint,
                                             EventsList, EventsThemes)
 from bot.callbacks.timetable_callbacks import TimetableEventsList
+from bot.utils.config import exhibition_name, event_program_url
 
 
 # Inline клавиатура для выбора категории мероприятий (Мои/Все)
@@ -39,7 +40,10 @@ def inline_events_themes(event_themes: dict, events_type: str):
             if events_type == "my":
                 builder.button(text=button_text, callback_data=EventsList(theme_id=theme[1]))
             else:
-                builder.button(text=button_text, url=f'https://pirexpo.com/program/schedule?theme={theme[1]}')
+                if exhibition_name == "PIR":
+                    builder.button(text=button_text, url=event_program_url + f"/schedule?theme={theme[1]}")
+                else:
+                    builder.button(text=button_text, url=event_program_url)
 
     builder.button(text="🎉 Вернуться к выбору категории мероприятий", callback_data="event_categories_list")
 

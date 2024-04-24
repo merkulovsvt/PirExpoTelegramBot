@@ -1,10 +1,10 @@
-from bot.utils.config import server_url, token
+from bot.utils.config import server_url, bot_token
 from bot.utils.scripts import get_json_request
 
 
 async def get_partners_list(theme_id: str | None):
     url = server_url + "/tgbot/partner/list"
-    params = {"api_key": token}
+    params = {"api_key": bot_token}
 
     if theme_id:
         params['theme_id'] = theme_id
@@ -14,7 +14,7 @@ async def get_partners_list(theme_id: str | None):
 
 async def get_themes_list():
     url = server_url + "/tgbot/partner/filter"
-    params = {"api_key": token}
+    params = {"api_key": bot_token}
 
     request = await get_json_request(url=url, params=params)
     return request['theme']
@@ -22,7 +22,7 @@ async def get_themes_list():
 
 async def get_types_list():
     url = server_url + "/tgbot/partner/filter"
-    params = {"api_key": token}
+    params = {"api_key": bot_token}
 
     request = await get_json_request(url=url, params=params)
     return request['types']
@@ -30,6 +30,6 @@ async def get_types_list():
 
 async def get_partner_details(partner_id: str):
     url = server_url + f"/tgbot/partner/{partner_id}"
-    params = {"api_key": token}
+    params = {"api_key": bot_token}
 
     return await get_json_request(url=url, params=params)
