@@ -31,7 +31,7 @@ WORKDIR /home/appuser
 USER appuser
 
 # Install application into container
-COPY ../../OneDrive/Documents .
+COPY . .
 
 # Run the application
 #CMD ["python3", "bot/main.py"]
