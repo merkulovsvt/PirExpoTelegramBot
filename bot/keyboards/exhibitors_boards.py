@@ -127,7 +127,7 @@ def inline_exhibitors_details(exhibitor_details: dict, exhibitors_list_data: dic
         text += f"<b>Описание</b>: {exhibitor_details.get('description')}\n\n"
 
     if exhibitor_details.get('phone'):
-        text += f"<b>Телефон</b>: {exhibitor_details.get('phone')}\n\n"
+        text += f"<b>Номер телефона</b>: {exhibitor_details.get('phone')}\n\n"
 
     if exhibitor_details.get('email'):
         text += f"<b>Почта</b>: {exhibitor_details.get('email')}\n\n"
