@@ -18,7 +18,7 @@ def inline_partners_themes_list(themes_list: list):
 
 
 # Inline клавиатура для вывода типа партнёров
-def inline_partner_type_list(partners_list: dict, theme_id: str):
+def inline_partner_type_list(partners_list: dict, theme_id: str, theme_filtration: bool):
     builder = InlineKeyboardBuilder()
     text = "Выберите тип партнёра:"
 
@@ -29,7 +29,8 @@ def inline_partner_type_list(partners_list: dict, theme_id: str):
     for type in sorted(type_set, key=lambda x: x[0]):
         builder.button(text=type[0], callback_data=PartnersList(theme_id=theme_id, type_id=type[1]))
 
-    builder.button(text="🤝 Вернуться к выбору выставки", callback_data="partner_themes_list")
+    if theme_filtration:
+        builder.button(text="🤝 Вернуться к выбору выставки", callback_data="partner_themes_list")
 
     builder.adjust(1, repeat=True)
     return text, builder.as_markup()
@@ -43,10 +44,10 @@ def inline_partners_list(partners_list: dict, theme_id: str, type_id: str):
     partner_set = set()
     for partner in partners_list:
         if str(partner["type"]["id"]) == type_id:
-            partner_set.add((partner["name"], str(partner["id"])))
-
+            partner_set.add((partner["logo"]["order"], partner["name"], str(partner["id"])))
+    # print(partner_set)
     for partner in sorted(partner_set, key=lambda x: x[0]):
-        builder.button(text=partner[0], callback_data=PartnerDetails(partner_id=partner[1]))
+        builder.button(text=partner[1], callback_data=PartnerDetails(partner_id=partner[2]))
 
     builder.button(text="🤝 Вернуться к выбору типов", callback_data=PartnersTypes(theme_id=theme_id))
 

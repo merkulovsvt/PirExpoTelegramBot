@@ -13,6 +13,7 @@ bot_description = os.getenv("BOT_DESCRIPTION").replace(r'\n', '\n')
 bot_short_description = os.getenv("BOT_SHORT_DESCRIPTION").replace(r'\n', '\n')
 
 server_url = os.getenv("SERVER_URL")
+created_after_date = os.getenv("CREATED_AFTER_DATE")
 exhibition_name = os.getenv("EXHIBITION_NAME")
 exhibition_url = os.getenv("EXHIBITION_URL")
 event_program_url = os.getenv("EVENT_PROGRAM_URL")

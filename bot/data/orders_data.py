@@ -1,10 +1,10 @@
-from bot.utils.config import server_url, bot_token
+from bot.utils.config import server_url, bot_token, created_after_date
 from bot.utils.scripts import get_json_request
 
 
 async def get_orders_list(chat_id: int) -> dict:
     url = server_url + "/tgbot/order/list"
-    params = {"chat_id": chat_id, "api_key": bot_token}
+    params = {"chat_id": chat_id, "api_key": bot_token, 'created_after': created_after_date}
 
     return await get_json_request(url=url, params=params)
 

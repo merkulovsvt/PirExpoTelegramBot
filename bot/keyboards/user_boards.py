@@ -1,7 +1,7 @@
 from aiogram.types import KeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
 
-from bot.utils.config import exhibition_url, bot_start_text
+from bot.utils.config import exhibition_url, bot_start_text, exhibition_name
 
 
 # Inline клавиатура для /start +
@@ -17,16 +17,20 @@ def inline_start() -> (str, InlineKeyboardBuilder):
 # Reply клавиатура для отправки номера телефона пользователем +
 def reply_get_phone_number() -> (str, ReplyKeyboardBuilder):
     builder = ReplyKeyboardBuilder()
-    builder.add(KeyboardButton(text=' 📞 Поделиться номером телефон', request_contact=True))
+    builder.add(KeyboardButton(text='📞 Поделиться номером телефон', request_contact=True))
 
-    text = "Зарегистрируйтесь, поделившись с нами вашим номером телефона:"
+    text = "Зарегистрируйтесь, поделившись с нами вашим номером телефона 📞:"
     return text, builder.as_markup(resize_keyboard=True)
 
 
 # Reply клавиатура для основного меню +
 def reply_main_menu(phone=None) -> (str, ReplyKeyboardBuilder):
     builder = ReplyKeyboardBuilder()
-    buttons = ("🛒 Заказы", "🎫 Билеты", "📅 Расписание", "🎉 Мероприятия", "🤝 Экспоненты", "🤝 Партнёры")
+
+    if exhibition_name == 'PIR':
+        buttons = ("🛒 Заказы", "🎫 Билеты", "🎉 Мероприятия", "📅 Расписание", "🤝 Экспоненты", "🤝 Партнёры")
+    else:
+        buttons = ("🛒 Заказы", "🎫 Билеты", "🎉 Мероприятия", "📅 План мероприятий", "🤝 Экспоненты", "🤝 Партнёры")
 
     for elem in buttons:
         builder.add(KeyboardButton(text=elem))
@@ -35,7 +39,7 @@ def reply_main_menu(phone=None) -> (str, ReplyKeyboardBuilder):
     start_text = bot_start_text
 
     if phone:
-        text = f"Вы успешно зарегистрировались по номеру {phone}!\n" + start_text
+        text = f"Вы успешно зарегистрировались по номеру {phone}!\n"
     else:
         text = start_text
 

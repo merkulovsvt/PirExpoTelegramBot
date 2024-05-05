@@ -21,8 +21,17 @@ async def partners_themes_view(message: types.Message):
 
     themes_list = await get_themes_list()
 
-    text, keyboard = inline_partners_themes_list(themes_list=themes_list)
-    await message.answer(text=text, reply_markup=keyboard)
+    if len(themes_list) != 1:
+        text, keyboard = inline_partners_themes_list(themes_list=themes_list)
+        await message.answer(text=text, reply_markup=keyboard)
+    else:
+        theme_id = str(themes_list[0].get('id'))
+
+        partners_list = await get_partners_list(theme_id=theme_id)
+
+        text, keyboard = inline_partner_type_list(partners_list=partners_list, theme_id=theme_id,
+                                                  theme_filtration=False)
+        await message.answer(text=text, reply_markup=keyboard)
 
 
 # Хендлер по выводу списка тем выставки через inline кнопку (только для ПИРа)
@@ -30,19 +39,35 @@ async def partners_themes_view(message: types.Message):
 async def callback_partners_themes_list_view(callback: types.CallbackQuery):
     themes_list = await get_themes_list()
 
-    text, keyboard = inline_partners_themes_list(themes_list=themes_list)
-    await callback.message.edit_text(text=text, reply_markup=keyboard)
-    await callback.answer()
+    if len(themes_list) != 1:
+        text, keyboard = inline_partners_themes_list(themes_list=themes_list)
+        await callback.message.answer(text=text, reply_markup=keyboard)
+        await callback.answer()
+    else:
+        theme_id = str(themes_list[0].get('id'))
+
+        partners_list = await get_partners_list(theme_id=theme_id)
+
+        text, keyboard = inline_partner_type_list(partners_list=partners_list, theme_id=theme_id,
+                                                  theme_filtration=False)
+        await callback.message.edit_text(text=text, reply_markup=keyboard)
+        await callback.answer()
 
 
 # Хендлер по выводу списка типов партнёров (Генеральный, информационный, ...)
 @router.callback_query(LoggedIn(), PartnersTypes.filter())
 async def callback_partners_types_list_view(callback: types.CallbackQuery, callback_data: PartnersTypes):
     theme_id = callback_data.theme_id
-
     partners_list = await get_partners_list(theme_id=theme_id)
 
-    text, keyboard = inline_partner_type_list(partners_list=partners_list, theme_id=theme_id)
+    themes_list = await get_themes_list()
+    if len(themes_list) != 1:
+        theme_filtration = True
+    else:
+        theme_filtration = False
+
+    text, keyboard = inline_partner_type_list(partners_list=partners_list, theme_id=theme_id,
+                                              theme_filtration=theme_filtration)
     await callback.message.edit_text(text=text, reply_markup=keyboard)
     await callback.answer()
 

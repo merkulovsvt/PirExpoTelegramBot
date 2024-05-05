@@ -9,12 +9,17 @@ from bot.utils.config import exhibition_name, event_program_url
 
 
 # Inline клавиатура для выбора категории мероприятий (Мои/Все)
-def inline_event_categories():
+def inline_event_categories(url: str | None):
     builder = InlineKeyboardBuilder()
     text = "Выберите категорию:"
 
-    builder.button(text="Мои мероприятия", callback_data=EventsThemes(events_type='my'))
-    builder.button(text="Все мероприятия", callback_data=EventsThemes(events_type='*'))
+    if exhibition_name == 'PIR':
+        builder.button(text="Мои мероприятия", callback_data=EventsThemes(events_type='my'))
+
+    if url:
+        builder.button(text="Все мероприятия", url=url)
+    else:
+        builder.button(text="Все мероприятия", callback_data=EventsThemes(events_type='*'))
 
     return text, builder.as_markup()
 
@@ -36,7 +41,7 @@ def inline_events_themes(event_themes: dict, events_type: str):
     else:
         text = "Темы мероприятий:"
         for theme in sorted(themes_set):
-            button_text = f"{theme[0]}"
+            button_text = f"{theme[0].replace('FEST', '')}"
             if events_type == "my":
                 builder.button(text=button_text, callback_data=EventsList(theme_id=theme[1]))
             else:
@@ -55,7 +60,7 @@ def inline_events_themes(event_themes: dict, events_type: str):
 def inline_events_list(events: dict, theme_id: str):
     builder = InlineKeyboardBuilder()
 
-    text = f"Мероприятия {events[0]['theme']['name']}"
+    text = f"Мероприятия {events[0]['theme']['name'].replace('FEST', '')}"
 
     events_set = set()
     min_name_len = float("inf")

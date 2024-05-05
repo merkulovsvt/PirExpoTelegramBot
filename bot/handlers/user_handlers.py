@@ -4,8 +4,9 @@ from aiogram.fsm.context import FSMContext
 
 from bot.data.user_data import get_user_data, post_user_data
 from bot.keyboards.user_boards import reply_get_phone_number, reply_main_menu
-from bot.utils.filters import CheckReady, LoggedIn, LoggedOut
-from bot.utils.states import Exhibitors, User
+from bot.utils.config import bot_start_text
+from bot.utils.filters import CheckReady, LoggedOut
+from bot.utils.states import User
 
 router = Router()
 
@@ -28,6 +29,7 @@ async def command_start(message: types.Message, state: FSMContext):
         await message.answer(text=text, reply_markup=keyboard)
 
     elif fsm_user_state == "User:logged_out":
+        await message.answer(text=bot_start_text)
         text, keyboard = reply_get_phone_number()
         await message.answer(text=text, reply_markup=keyboard)
 

@@ -10,6 +10,7 @@ from bot.keyboards.events_boards import (inline_event_categories,
                                          inline_events_details,
                                          inline_events_list,
                                          inline_events_themes)
+from bot.utils.config import exhibition_url, event_program_url
 from bot.utils.filters import LoggedIn
 
 router = Router()
@@ -20,14 +21,26 @@ router = Router()
 async def events_type_view(message: types.Message):
     await message.bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.TYPING)
 
-    text, keyboard = inline_event_categories()
+    event_themes = await get_event_themes(chat_id=None)
+
+    if len(event_themes.get("theme")) == 1:
+        text, keyboard = inline_event_categories(url=event_program_url)
+    else:
+        text, keyboard = inline_event_categories(url=None)
+
     await message.answer(text=text, reply_markup=keyboard)
 
 
 # Хендлер по выбору типа мероприятий по inline кнопке
 @router.callback_query(LoggedIn(), F.data == "event_categories_list")
 async def callback_events_type_view(callback: types.CallbackQuery):
-    text, keyboard = inline_event_categories()
+    event_themes = await get_event_themes(chat_id=None)
+
+    if len(event_themes.get("theme")) == 1:
+        text, keyboard = inline_event_categories(url=event_program_url)
+    else:
+        text, keyboard = inline_event_categories(url=None)
+
     await callback.message.edit_text(text=text, reply_markup=keyboard)
     await callback.answer()
 

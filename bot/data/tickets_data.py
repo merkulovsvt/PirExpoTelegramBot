@@ -1,10 +1,10 @@
-from bot.utils.config import server_url, bot_token
+from bot.utils.config import server_url, bot_token, created_after_date
 from bot.utils.scripts import get_json_request, get_read_request
 
 
 async def get_tickets_list(chat_id: int, order_id: str) -> dict:
     url = server_url + "/tgbot/ticket/list"
-    params = {"chat_id": chat_id, "api_key": bot_token}
+    params = {"chat_id": chat_id, "api_key": bot_token, 'created_after': created_after_date}
 
     if order_id != "*":
         params["order_id"] = order_id
@@ -14,7 +14,8 @@ async def get_tickets_list(chat_id: int, order_id: str) -> dict:
 
 async def get_ticket_list_by_event(chat_id: int, ticket_type_id: str) -> dict:
     url = server_url + f"/tgbot/ticket/list"
-    params = {"api_key": bot_token, "chat_id": chat_id, "ticket_type": ticket_type_id}
+    params = {"api_key": bot_token, "chat_id": chat_id, "ticket_type": ticket_type_id,
+              'created_after': created_after_date}
 
     return await get_json_request(url=url, params=params)
 
