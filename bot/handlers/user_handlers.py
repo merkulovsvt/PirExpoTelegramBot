@@ -3,9 +3,9 @@ from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 
 from bot.data.user_data import get_user_data, post_user_data
-from bot.keyboards.user_boards import reply_get_phone_number, reply_main_menu
+from bot.keyboards.user_boards import reply_get_phone_number, reply_main_menu, inline_start
 from bot.utils.config import bot_start_text, exhibition_name
-from bot.utils.filters import CheckReady, LoggedOut, PirExpo
+from bot.utils.filters import CheckReady, LoggedOut
 from bot.utils.states import User
 
 router = Router()
@@ -14,9 +14,9 @@ router = Router()
 # Хендлер для команды /start (регистрации)
 @router.message(CommandStart())
 async def command_start(message: types.Message, state: FSMContext):
-    if not await state.get_state():
-        user_data = await get_user_data(chat_id=message.chat.id)
+    user_data = await get_user_data(chat_id=message.chat.id)
 
+    if not await state.get_state():
         if user_data:
             await state.set_state(User.logged_in)
         else:
@@ -25,7 +25,10 @@ async def command_start(message: types.Message, state: FSMContext):
     fsm_user_state = await state.get_state()
 
     if fsm_user_state == "User:logged_in":
-        text, keyboard = reply_main_menu()
+        text, keyboard = inline_start()
+        await message.answer(text=text, reply_markup=keyboard)
+
+        text, keyboard = reply_main_menu(phone=user_data.get('phone'))
         await message.answer(text=text, reply_markup=keyboard)
 
     elif fsm_user_state == "User:logged_out":
@@ -48,6 +51,9 @@ async def user_login(message: types.Message, state: FSMContext):
     text, keyboard = reply_main_menu(phone=phone)
     await message.answer(text=text, reply_markup=keyboard)
 
+    text, keyboard = inline_start()
+    await message.edit_text(text=text, reply_markup=keyboard)
+
 
 # Хендлер для обработки неверных ответов при регистрации
 @router.message(LoggedOut(), ~F.contact)
@@ -63,17 +69,7 @@ else:
 
 
 # Хендлер для обработки неверных ответов после регистрации
-@router.message(CheckReady(), PirExpo(), ~F.text.lower().in_(ignore_text))
-async def incorrect_user_message(message: types.Message):
-    text = ('К сожалению я не смог распознать Вашу команду.\n'
-            'Воспользуйтесь кнопками в меню или отправьте /start')
-    _, keyboard = reply_main_menu()
-
-    await message.answer(text=text, reply_markup=keyboard)
-
-
-# Хендлер для обработки неверных ответов после регистрации
-@router.message(CheckReady(), ~PirExpo(), ~F.text.lower().in_(ignore_text))
+@router.message(CheckReady(), ~F.text.lower().in_(ignore_text))
 async def incorrect_user_message(message: types.Message):
     text = ('К сожалению я не смог распознать Вашу команду.\n'
             'Воспользуйтесь кнопками в меню или отправьте /start')

@@ -9,9 +9,8 @@ def inline_start() -> (str, InlineKeyboardBuilder):
     builder = InlineKeyboardBuilder()
     builder.button(text="Наш сайт", url=exhibition_url)
 
-    start_text = bot_start_text
-
-    return start_text, builder.as_markup()
+    text = bot_start_text
+    return text, builder.as_markup()
 
 
 # Reply клавиатура для отправки номера телефона пользователем +
@@ -36,11 +35,9 @@ def reply_main_menu(phone=None) -> (str, ReplyKeyboardBuilder):
         builder.add(KeyboardButton(text=elem))
     builder.adjust(2, 2, 2)
 
-    start_text = bot_start_text
-
     if phone:
         text = f"Вы успешно зарегистрировались по номеру {phone}!\n"
     else:
-        text = start_text
+        text = bot_start_text
 
     return text, builder.as_markup(resize_keyboard=True)

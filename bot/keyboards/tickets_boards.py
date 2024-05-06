@@ -83,7 +83,8 @@ def inline_ticket_details(event_data: dict, order_id: str, ticket_id: str, ticke
         # text = f"Входной билет №{ticket_id} на {ticket_details['ticket_owner_name']}" #TODO
         text = f"Входной билет №{ticket_id}\n"
         # + f"Принадлежит заказу №{order_id}.")
-        builder.button(text="Редактировать", url="zaza.com")  # Ждём ссылку от Леши
+        # builder.button(text="Редактировать [in progress]", url="zaza.com")  # Ждём ссылку от Леши
+        builder.button(text="Редактировать [in progress]", callback_data="inactive")
 
         if order_id != "*":
             ticket_type = "*"
