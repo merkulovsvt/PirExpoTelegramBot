@@ -9,20 +9,26 @@ from bot.data.tickets_data import (get_ticket_details, get_ticket_pdf,
 from bot.keyboards.tickets_boards import (inline_ticket_details,
                                           inline_ticket_types,
                                           inline_tickets_list)
+from bot.utils.config import exhibition_name
 from bot.utils.filters import LoggedIn
 
 router = Router()
 
 
 # Хендлер по выбору типа билета по reply кнопке
-@router.message(LoggedIn(), F.text.lower() == "🎫 билеты")
+@router.message(LoggedIn(), F.text.lower().contains("билеты"))
 async def ticket_type_view(message: types.Message):
     await message.bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.TYPING)
 
     tickets = await get_tickets_list(chat_id=message.chat.id, order_id="*")
 
     if tickets and tickets_status_check(tickets=tickets):
-        text, keyboard = inline_ticket_types()
+        if exhibition_name == "PIR":
+            text, keyboard = inline_ticket_types()
+        else:
+            text, keyboard = inline_tickets_list(tickets=tickets, ticket_type='entry', order_id="*",
+                                                 type_filtration=False)
+
         await message.answer(text=text, reply_markup=keyboard)
     else:
         await message.answer(text="К сожалению, у вас нет билетов")
@@ -34,11 +40,15 @@ async def callback_ticket_type_view(callback: types.CallbackQuery):
     tickets = await get_tickets_list(chat_id=callback.message.chat.id, order_id="*")
 
     if tickets and tickets_status_check(tickets=tickets):
-        text, keyboard = inline_ticket_types()
-        await callback.message.edit_text(text=text, reply_markup=keyboard)
+        if exhibition_name == "PIR":
+            text, keyboard = inline_ticket_types()
+        else:
+            text, keyboard = inline_tickets_list(tickets=tickets, ticket_type='entry', order_id="*",
+                                                 type_filtration=False)
+
+        await callback.message.answer(text=text, reply_markup=keyboard)
     else:
-        await callback.message.edit_text(text="К сожалению, у вас нет билетов")
-    await callback.answer()
+        await callback.message.answer(text="К сожалению, у вас нет билетов")
 
 
 # Хендлер по выводу списка билетов
@@ -48,8 +58,12 @@ async def callback_tickets_list_view(callback: types.CallbackQuery, callback_dat
     order_id = callback_data.order_id
 
     tickets = await get_tickets_list(chat_id=callback.message.chat.id, order_id=order_id)
-
-    text, keyboard = inline_tickets_list(tickets=tickets, ticket_type=ticket_type, order_id=order_id)
+    if exhibition_name == "PIR":
+        text, keyboard = inline_tickets_list(tickets=tickets, ticket_type=ticket_type, order_id=order_id,
+                                             type_filtration=True)
+    else:
+        text, keyboard = inline_tickets_list(tickets=tickets, ticket_type=ticket_type, order_id=order_id,
+                                             type_filtration=False)
     await callback.message.edit_text(text=text, reply_markup=keyboard)
     await callback.answer()
 

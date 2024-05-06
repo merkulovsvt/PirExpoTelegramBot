@@ -12,7 +12,7 @@ router = Router()
 
 
 # Хендлер по выводу списка заказов по reply кнопке
-@router.message(LoggedIn(), F.text.lower() == "🛒 заказы")
+@router.message(LoggedIn(), F.text.lower().contains("заказы"))
 async def orders_list_view(message: types.Message):
     await message.bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.TYPING)
 

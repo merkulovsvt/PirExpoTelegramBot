@@ -4,8 +4,8 @@ from aiogram.fsm.context import FSMContext
 
 from bot.data.user_data import get_user_data, post_user_data
 from bot.keyboards.user_boards import reply_get_phone_number, reply_main_menu
-from bot.utils.config import bot_start_text
-from bot.utils.filters import CheckReady, LoggedOut
+from bot.utils.config import bot_start_text, exhibition_name
+from bot.utils.filters import CheckReady, LoggedOut, PirExpo
 from bot.utils.states import User
 
 router = Router()
@@ -56,11 +56,24 @@ async def wrong_user_login(message: types.Message):
     await message.answer(text=text, reply_markup=keyboard)
 
 
-ignore_text = ["🛒 заказы", "🎫 билеты", "📅 расписание", "🎉 мероприятия", "🤝 экспоненты", "🤝 партнёры"]
+if exhibition_name == "PIR":
+    ignore_text = ["🛒 заказы", "🎫 билеты", "📅 расписание", "🎉 мероприятия", "🤝 экспоненты", "🤝 партнёры"]
+else:
+    ignore_text = ["🛒 заказы", "🎫 билеты", "📍 план мероприятия", "🎉 расписание", "🤝 экспоненты", "🤝 партнёры"]
 
 
 # Хендлер для обработки неверных ответов после регистрации
-@router.message(CheckReady(), ~F.text.lower().in_(ignore_text))
+@router.message(CheckReady(), PirExpo(), ~F.text.lower().in_(ignore_text))
+async def incorrect_user_message(message: types.Message):
+    text = ('К сожалению я не смог распознать Вашу команду.\n'
+            'Воспользуйтесь кнопками в меню или отправьте /start')
+    _, keyboard = reply_main_menu()
+
+    await message.answer(text=text, reply_markup=keyboard)
+
+
+# Хендлер для обработки неверных ответов после регистрации
+@router.message(CheckReady(), ~PirExpo(), ~F.text.lower().in_(ignore_text))
 async def incorrect_user_message(message: types.Message):
     text = ('К сожалению я не смог распознать Вашу команду.\n'
             'Воспользуйтесь кнопками в меню или отправьте /start')

@@ -10,15 +10,30 @@ from bot.keyboards.events_boards import (inline_event_categories,
                                          inline_events_details,
                                          inline_events_list,
                                          inline_events_themes)
-from bot.utils.config import exhibition_url, event_program_url
-from bot.utils.filters import LoggedIn
+from bot.utils.config import event_program_url
+from bot.utils.filters import LoggedIn, PirExpo
 
 router = Router()
 
 
-# Хендлер по выбору типа мероприятий по reply кнопке
-@router.message(LoggedIn(), F.text.lower() == "🎉 мероприятия")
-async def events_type_view(message: types.Message):
+# Хендлер по выбору типа мероприятий по reply кнопке (PIR + мероприятия)
+@router.message(LoggedIn(), PirExpo(), F.text.lower().contains("мероприятия"))
+async def events_type_view_pir(message: types.Message):
+    await message.bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.TYPING)
+
+    event_themes = await get_event_themes(chat_id=None)
+
+    if len(event_themes.get("theme")) == 1:
+        text, keyboard = inline_event_categories(url=event_program_url)
+    else:
+        text, keyboard = inline_event_categories(url=None)
+
+    await message.answer(text=text, reply_markup=keyboard)
+
+
+# Хендлер по выбору типа мероприятий по reply кнопке (~PIR + расписание)
+@router.message(LoggedIn(), ~PirExpo(), F.text.lower().contains("расписание"))
+async def events_type_view_non_pir(message: types.Message):
     await message.bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.TYPING)
 
     event_themes = await get_event_themes(chat_id=None)

@@ -30,7 +30,7 @@ def reply_main_menu(phone=None) -> (str, ReplyKeyboardBuilder):
     if exhibition_name == 'PIR':
         buttons = ("🛒 Заказы", "🎫 Билеты", "🎉 Мероприятия", "📅 Расписание", "🤝 Экспоненты", "🤝 Партнёры")
     else:
-        buttons = ("🛒 Заказы", "🎫 Билеты", "🎉 Мероприятия", "📅 План мероприятий", "🤝 Экспоненты", "🤝 Партнёры")
+        buttons = ("🛒 Заказы", "🎫 Билеты", "📍 План мероприятия", "🎉 Расписание", "🤝 Экспоненты", "🤝 Партнёры")
 
     for elem in buttons:
         builder.add(KeyboardButton(text=elem))

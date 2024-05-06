@@ -1,8 +1,9 @@
-from aiogram.filters import Filter
+from aiogram.filters import Filter, BaseFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types.message import Message
 
 from bot.data.user_data import get_user_data
+from bot.utils.config import exhibition_name
 from bot.utils.states import User
 
 
@@ -58,3 +59,11 @@ class CheckReady(Filter):
             else:
                 await state.set_state(User.logged_in)
                 return True
+
+
+class PirExpo(BaseFilter):
+    async def __call__(self, message: Message, state: FSMContext) -> bool:
+        if exhibition_name == 'PIR':
+            return True
+        else:
+            return False

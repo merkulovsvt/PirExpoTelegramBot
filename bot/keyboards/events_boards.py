@@ -11,13 +11,15 @@ from bot.utils.config import exhibition_name, event_program_url
 # Inline клавиатура для выбора категории мероприятий (Мои/Все)
 def inline_event_categories(url: str | None):
     builder = InlineKeyboardBuilder()
-    text = "Выберите категорию:"
 
     if exhibition_name == 'PIR':
+        text = "Выберите категорию:"
         builder.button(text="Мои мероприятия", callback_data=EventsThemes(events_type='my'))
+    else:
+        text = "Перейдите на сайт:"
 
     if url:
-        builder.button(text="Все мероприятия", url=url)
+        builder.button(text="Программа мероприятий", url=url)
     else:
         builder.button(text="Все мероприятия", callback_data=EventsThemes(events_type='*'))
 

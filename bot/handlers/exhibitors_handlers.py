@@ -19,7 +19,7 @@ router = Router()
 
 
 # Хендлер по выводу меню экспонентов через reply кнопку
-@router.message(LoggedIn(), F.text.lower() == "🤝 экспоненты")
+@router.message(LoggedIn(), F.text.lower().contains("экспоненты"))
 async def exhibitors_menu_view(message: types.Message):
     await message.bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.TYPING)
     text, keyboard = inline_exhibitors_menu()

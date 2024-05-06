@@ -22,7 +22,7 @@ def inline_ticket_types() -> (str, InlineKeyboardMarkup):
 
 
 # Inline клавиатура для вывода списка билетов (для orders, в том числе)
-def inline_tickets_list(tickets: dict, ticket_type: str, order_id: str):
+def inline_tickets_list(tickets: dict, ticket_type: str, order_id: str, type_filtration: bool):
     builder = InlineKeyboardBuilder()
     list_empty = True
 
@@ -66,7 +66,9 @@ def inline_tickets_list(tickets: dict, ticket_type: str, order_id: str):
     elif ticket_type == "*" and list_empty:
         text = "К сожалению, у вас нет билетов в данном заказе"
 
-    builder.button(text=return_button_text, callback_data=callback_data)
+    if type_filtration:
+        builder.button(text=return_button_text, callback_data=callback_data)
+
     builder.adjust(1, repeat=True)
 
     return text, builder.as_markup()

@@ -15,7 +15,7 @@ router = Router()
 
 
 # Хендлер по выводу списка тем выставки через reply кнопку (только для ПИРа)
-@router.message(LoggedIn(), F.text.lower() == "🤝 партнёры")
+@router.message(LoggedIn(), F.text.lower().contains("партнёры"))
 async def partners_themes_view(message: types.Message):
     await message.bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.TYPING)
 
