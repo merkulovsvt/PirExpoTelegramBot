@@ -66,7 +66,7 @@ def inline_tickets_list(tickets: dict, ticket_type: str, order_id: str, type_fil
     elif ticket_type == "*" and list_empty:
         text = "К сожалению, у вас нет билетов в данном заказе"
 
-    if type_filtration:
+    if type_filtration or order_id != "*":
         builder.button(text=return_button_text, callback_data=callback_data)
 
     builder.adjust(1, repeat=True)
