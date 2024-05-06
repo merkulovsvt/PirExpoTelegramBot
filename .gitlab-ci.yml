@@ -1,0 +1,16 @@
+stages:
+#  - build
+  - deploy
+
+
+before_script:
+  - . ~/profile.d/nvmrc.sh
+#  - nvm use 18.18.2
+
+deploy-bestchefs-v3:
+  stage: deploy
+  only:
+    refs:
+      - master
+  script:
+   - ssh root@docker-pc.pir.lan "cd /opt/expocab-bot/; git pull; echo '$envbest' > .env.best; echo '$envcake' > .env.cake; docker-compose up -d --build --force-recreate;"
