@@ -16,6 +16,7 @@ server_url = os.getenv("SERVER_URL")
 created_after_date = os.getenv("CREATED_AFTER_DATE")
 exhibition_name = os.getenv("EXHIBITION_NAME")
 exhibition_url = os.getenv("EXHIBITION_URL")
+exhibition_map_url = os.getenv("EXHIBITION_MAP_URL")
 event_program_url = os.getenv("EVENT_PROGRAM_URL")
 
 

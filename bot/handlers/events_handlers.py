@@ -5,7 +5,7 @@ from bot.callbacks.events_callbacks import (EventDetails, EventPrint,
                                             EventsList, EventsThemes)
 from bot.data.events_data import (get_event_data, get_event_themes,
                                   get_events_list)
-from bot.data.tickets_data import get_ticket_list_by_event, get_ticket_pdf
+from bot.data.tickets_data import get_ticket_list_by_event, get_pdf
 from bot.keyboards.events_boards import (inline_event_categories,
                                          inline_events_details,
                                          inline_events_list,
@@ -110,7 +110,7 @@ async def callback_events_print(callback: types.CallbackQuery, callback_data: Ev
     for ticket in ticket_list:
 
         url = ticket["pdf_url"]
-        result = await get_ticket_pdf(url=url)
+        result = await get_pdf(url=url)
         if result:
             await callback.message.bot.send_chat_action(chat_id=callback.message.chat.id,
                                                         action=ChatAction.UPLOAD_DOCUMENT)

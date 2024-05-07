@@ -27,7 +27,7 @@ async def get_ticket_details(ticket_id: str) -> dict:
     return await get_json_request(url=url, params=params)
 
 
-async def get_ticket_pdf(url: str):
+async def get_pdf(url: str):
     return await get_read_request(url=url, params={})
 
 

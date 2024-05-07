@@ -32,7 +32,9 @@ async def command_start(message: types.Message, state: FSMContext):
         await message.answer(text=text, reply_markup=keyboard)
 
     elif fsm_user_state == "User:logged_out":
-        await message.answer(text=bot_start_text)
+        text = bot_start_text
+        await message.answer(text=text)
+
         text, keyboard = reply_get_phone_number()
         await message.answer(text=text, reply_markup=keyboard)
 
@@ -50,9 +52,6 @@ async def user_login(message: types.Message, state: FSMContext):
 
     text, keyboard = reply_main_menu(phone=phone)
     await message.answer(text=text, reply_markup=keyboard)
-
-    text, keyboard = inline_start()
-    await message.edit_text(text=text, reply_markup=keyboard)
 
 
 # Хендлер для обработки неверных ответов при регистрации

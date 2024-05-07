@@ -4,7 +4,7 @@ from aiogram.enums import ChatAction, ParseMode
 from bot.callbacks.tickets_callbacks import (TicketDetails, TicketPrint,
                                              TicketsList)
 from bot.data.events_data import get_event_data
-from bot.data.tickets_data import (get_ticket_details, get_ticket_pdf,
+from bot.data.tickets_data import (get_ticket_details, get_pdf,
                                    get_tickets_list, tickets_status_check)
 from bot.keyboards.tickets_boards import (inline_ticket_details,
                                           inline_ticket_types,
@@ -95,7 +95,7 @@ async def callback_ticket_print_view(callback: types.CallbackQuery, callback_dat
     ticket_details = await get_ticket_details(ticket_id=ticket_id)
 
     url = ticket_details["pdf_url"]
-    result = await get_ticket_pdf(url=url)
+    result = await get_pdf(url=url)
     if result:
         await callback.message.bot.send_chat_action(chat_id=callback.message.chat.id,
                                                     action=ChatAction.UPLOAD_DOCUMENT)
