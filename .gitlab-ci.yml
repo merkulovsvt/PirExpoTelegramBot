@@ -28,4 +28,4 @@ deploy-bot:
     refs:
       - master
   script:
-   - ssh root@docker-pc.pir.lan "source ~/.bashrc ||cd /opt/expocab-bot/ || docker-compose up -d"
+   - ssh root@docker-pc.pir.lan "source ~/.bashrc ||cd /opt/expocab-bot/ || docker-compose up -d --force-recreate"
