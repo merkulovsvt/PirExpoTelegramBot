@@ -63,7 +63,4 @@ class CheckReady(Filter):
 
 class PirExpo(BaseFilter):
     async def __call__(self, message: Message, state: FSMContext) -> bool:
-        if exhibition_name == 'PIR':
-            return True
-        else:
-            return False
+        return exhibition_name == 'PIR'

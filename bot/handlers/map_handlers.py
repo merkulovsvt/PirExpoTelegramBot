@@ -14,4 +14,3 @@ async def map_print(message: types.Message):
 
     text = "In progress..."
     await message.answer(text=text)
-
