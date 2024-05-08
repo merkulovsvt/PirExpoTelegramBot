@@ -18,6 +18,6 @@ async def exhibition_map_print(message: types.Message):
                                            action=ChatAction.UPLOAD_DOCUMENT)
 
         await message.bot.send_document(message.chat.id, document=types.BufferedInputFile(
-            file=result, filename='План мероприятия.pdf'))
+            file=result, filename='План мероприятия.jpg'))
     else:
         await message.reply(text="К сожалению, не можем прислать план мероприятия.")
