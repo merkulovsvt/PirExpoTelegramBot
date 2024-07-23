@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 # Environment variables
 load_dotenv()
 
+host_url = os.getenv('HOST_URL')
+
 bot_token = os.getenv("BOT_TOKEN")
 bot_name = os.getenv("BOT_NAME")
 bot_start_text = os.getenv("BOT_START_TEXT").replace(r'\n', '\n')
